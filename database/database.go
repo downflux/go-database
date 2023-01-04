@@ -72,6 +72,26 @@ func (db *DB) GetAgentOrDie(x id.ID) roagent.RO {
 	}
 }
 
+// GetFeatureOrDie is a read-only operation and may be called concurrently with
+// other read-only operations.
+func (db *DB) GetFeatureOrDie(x id.ID) rofeature.RO {
+	if a, ok := db.features[x]; !ok {
+		panic(fmt.Sprintf("cannot find feature %v", x))
+	} else {
+		return a
+	}
+}
+
+// GetProjectileOrDie is a read-only operation and may be called concurrently
+// with other read-only operations.
+func (db *DB) GetProjectileOrDie(x id.ID) roprojectile.RO {
+	if a, ok := db.projectiles[x]; !ok {
+		panic(fmt.Sprintf("cannot find projectile %v", x))
+	} else {
+		return a
+	}
+}
+
 // InsertAgent mutates the DB and must be called serially.
 func (db *DB) InsertAgent(o roagent.O) roagent.RO {
 	x := id.ID(db.counter)
@@ -86,83 +106,6 @@ func (db *DB) InsertAgent(o roagent.O) roagent.RO {
 	}
 
 	return a
-}
-
-// ListAgents returns all agents in the DB and may be called concurrently with
-// other read-only operations. All values must be consumed (or the channel is
-// garbage collected) before a DB mutation occurs.
-func (db *DB) ListAgents() <-chan roagent.RO {
-	ch := make(chan roagent.RO, 256)
-	go func(ch chan<- roagent.RO) {
-		defer close(ch)
-		for _, a := range db.agents {
-			ch <- a
-		}
-	}(ch)
-	return ch
-}
-
-// DeleteAgent mutates the DB and must be called serially.
-func (db *DB) DeleteAgent(x id.ID) {
-	if _, ok := db.agents[x]; !ok {
-		panic(fmt.Sprintf("cannot find agent %v", x))
-	}
-
-	delete(db.agents, x)
-	if err := db.agentsBVH.Remove(x); err != nil {
-		panic(fmt.Sprintf("cannot delete agent: %v", err))
-	}
-}
-
-// QueryAgents is a read-only operation and may be called concurrently with other
-// read-only operations.
-func (db *DB) QueryAgents(q hyperrectangle.R, filter func(a roagent.RO) bool) []roagent.RO {
-	candidates := db.agentsBVH.BroadPhase(q)
-
-	results := make([]roagent.RO, 0, len(candidates))
-	for _, x := range candidates {
-		a := db.agents[x]
-		if filter(a) {
-			results = append(results, a)
-		}
-	}
-	return results
-}
-
-// SetAgentPosition mutates the DB and must be called serially.
-func (db *DB) SetAgentPosition(x id.ID, v vector.V) {
-	a := db.GetAgentOrDie(x)
-
-	a.(*agent.A).SetPosition(v)
-	db.agentsBVH.Update(x, a.AABB())
-}
-
-// SetAgentVelocity mutates the DB, but may be called concurently with other
-// invocations on different agents.
-func (db *DB) SetAgentVelocity(x id.ID, v vector.V) {
-	db.GetAgentOrDie(x).(*agent.A).SetVelocity(v)
-}
-
-// SetAgentTargetVelocity mutates the DB, but may be called concurrently with
-// other invocations on different agents.
-func (db *DB) SetAgentTargetVelocity(x id.ID, v vector.V) {
-	db.GetAgentOrDie(x).(*agent.A).SetTargetVelocity(v)
-}
-
-// SetAgentHeading mutates the DB, but may be called concurrently with other
-// invocations on different agents.
-func (db *DB) SetAgentHeading(x id.ID, v polar.V) {
-	db.GetAgentOrDie(x).(*agent.A).SetHeading(v)
-}
-
-// GetFeatureOrDie is a read-only operation and may be called concurrently with
-// other read-only operations.
-func (db *DB) GetFeatureOrDie(x id.ID) rofeature.RO {
-	if a, ok := db.features[x]; !ok {
-		panic(fmt.Sprintf("cannot find feature %v", x))
-	} else {
-		return a
-	}
 }
 
 // InsertFeature mutates the DB and must be called serially.
@@ -181,9 +124,41 @@ func (db *DB) InsertFeature(o rofeature.O) rofeature.RO {
 	return a
 }
 
-// ListFeatures returns all features in the DB and may be called concurrently
-// with other read-only operations. All values must be consumed (or the channel
-// is garbage collected) before a DB mutation occurs.
+// InsertProjectile mutates the DB and must be called serially.
+func (db *DB) InsertProjectile(o roprojectile.O) roprojectile.RO {
+	x := id.ID(db.counter)
+	db.counter += 1
+
+	a := projectile.New(projectile.O(o))
+	a.SetID(x)
+
+	db.projectiles[x] = a
+	return a
+}
+
+// ListAgents returns all agents in the DB. There are serveral use-cases for
+// this method which changes the invocation pattern.
+//
+//  1. Read-only operations on agents may consume this output concurrently.
+//  1. Agent-specific mutations should first iterate over the returned values
+//     and create a proposal batch of changes. If these changes do not modify
+//     the BVH, they may be run in parallel. Changes to the BVH (e.g.
+//     SetAgentPosition) must be done serially.
+func (db *DB) ListAgents() <-chan roagent.RO {
+	ch := make(chan roagent.RO, 256)
+	go func(ch chan<- roagent.RO) {
+		defer close(ch)
+		for _, a := range db.agents {
+			ch <- a
+		}
+	}(ch)
+	return ch
+}
+
+// ListFeatures returns all features in the DB. There are serveral use-cases for
+// this method which changes the invocation pattern.
+//
+// See ListAgents for more information.
 func (db *DB) ListFeatures() <-chan rofeature.RO {
 	ch := make(chan rofeature.RO, 256)
 	go func(ch chan<- rofeature.RO) {
@@ -193,6 +168,33 @@ func (db *DB) ListFeatures() <-chan rofeature.RO {
 		}
 	}(ch)
 	return ch
+}
+
+// ListProjectiles returns all projectiles in the DB. There are serveral
+// use-cases for this method which changes the invocation pattern.
+//
+// See ListAgents for more information.
+func (db *DB) ListProjectiles() <-chan roprojectile.RO {
+	ch := make(chan roprojectile.RO, 256)
+	go func(ch chan<- roprojectile.RO) {
+		defer close(ch)
+		for _, a := range db.projectiles {
+			ch <- a
+		}
+	}(ch)
+	return ch
+}
+
+// DeleteAgent mutates the DB and must be called serially.
+func (db *DB) DeleteAgent(x id.ID) {
+	if _, ok := db.agents[x]; !ok {
+		panic(fmt.Sprintf("cannot find agent %v", x))
+	}
+
+	delete(db.agents, x)
+	if err := db.agentsBVH.Remove(x); err != nil {
+		panic(fmt.Sprintf("cannot delete agent: %v", err))
+	}
 }
 
 // DeleteFeature mutates the DB and must be called serially.
@@ -207,8 +209,32 @@ func (db *DB) DeleteFeature(x id.ID) {
 	}
 }
 
-// QueryFeatures is a read-only operation and may be called concurrently with other
-// read-only operations.
+// DeleteProjectile mutates the DB and must be called serially.
+func (db *DB) DeleteProjectile(x id.ID) {
+	if _, ok := db.projectiles[x]; !ok {
+		panic(fmt.Sprintf("cannot find projectile %v", x))
+	}
+
+	delete(db.projectiles, x)
+}
+
+// QueryAgents is a read-only operation and may be called concurrently with
+// other read-only operations.
+func (db *DB) QueryAgents(q hyperrectangle.R, filter func(a roagent.RO) bool) []roagent.RO {
+	candidates := db.agentsBVH.BroadPhase(q)
+
+	results := make([]roagent.RO, 0, len(candidates))
+	for _, x := range candidates {
+		a := db.agents[x]
+		if filter(a) {
+			results = append(results, a)
+		}
+	}
+	return results
+}
+
+// QueryFeatures is a read-only operation and may be called concurrently with
+// other read-only operations.
 func (db *DB) QueryFeatures(q hyperrectangle.R, filter func(a rofeature.RO) bool) []rofeature.RO {
 	candidates := db.featuresBVH.BroadPhase(q)
 
@@ -222,73 +248,52 @@ func (db *DB) QueryFeatures(q hyperrectangle.R, filter func(a rofeature.RO) bool
 	return results
 }
 
-// GetProjectileOrDie is a read-only operation and may be called concurrently with
-// other read-only operations.
-func (db *DB) GetProjectileOrDie(x id.ID) roprojectile.RO {
-	if a, ok := db.projectiles[x]; !ok {
-		panic(fmt.Sprintf("cannot find projectile %v", x))
-	} else {
-		return a
-	}
+// SetAgentPosition mutates the BVH and must be called serially.
+func (db *DB) SetAgentPosition(x id.ID, v vector.V) {
+	a := db.GetAgentOrDie(x)
+
+	a.(*agent.A).SetPosition(v)
+	db.agentsBVH.Update(x, a.AABB())
 }
 
-// InsertProjectile mutates the DB and must be called serially.
-func (db *DB) InsertProjectile(o roprojectile.O) roprojectile.RO {
-	x := id.ID(db.counter)
-	db.counter += 1
-
-	a := projectile.New(projectile.O(o))
-	a.SetID(x)
-
-	db.projectiles[x] = a
-	return a
+// SetAgentVelocity does not mutate the BVH and may be called concurrently with
+// calls on other agents.
+func (db *DB) SetAgentVelocity(x id.ID, v vector.V) {
+	db.GetAgentOrDie(x).(*agent.A).SetVelocity(v)
 }
 
-// ListProjectiles returns all projectiles in the DB and may be called
-// concurrently with other read-only operations. All values must be consumed (or
-// the channel is garbage collected) before a DB mutation occurs.
-func (db *DB) ListProjectiles() <-chan roprojectile.RO {
-	ch := make(chan roprojectile.RO, 256)
-	go func(ch chan<- roprojectile.RO) {
-		defer close(ch)
-		for _, a := range db.projectiles {
-			ch <- a
-		}
-	}(ch)
-	return ch
+// SetAgentTargetVelocity does not mutate the BVH and may be called concurrently
+// with calls on other agents.
+func (db *DB) SetAgentTargetVelocity(x id.ID, v vector.V) {
+	db.GetAgentOrDie(x).(*agent.A).SetTargetVelocity(v)
 }
 
-// DeleteProjectile mutates the DB and must be called serially.
-func (db *DB) DeleteProjectile(x id.ID) {
-	if _, ok := db.projectiles[x]; !ok {
-		panic(fmt.Sprintf("cannot find projectile %v", x))
-	}
-
-	delete(db.projectiles, x)
+// SetAgentHeading does not mutate the BVH and may be called concurrently with
+// calls on other agents.
+func (db *DB) SetAgentHeading(x id.ID, v polar.V) {
+	db.GetAgentOrDie(x).(*agent.A).SetHeading(v)
 }
 
-// SetProjectilePosition mutates the DB, but may be called concurrently with
-// other invocations on different projectiles.
+// SetProjectilePosition does not mutate the BVH and may be called concurrently
+// with calls on other projectiles.
 func (db *DB) SetProjectilePosition(x id.ID, v vector.V) {
-	a := db.GetProjectileOrDie(x)
-
-	a.(*projectile.P).SetPosition(v)
+	db.GetProjectileOrDie(x).(*projectile.P).SetPosition(v)
 }
 
-// SetProjectileVelocity mutates the DB, but may be called concurently with
-// other invocations on different projectiles.
+// SetProjectileVelocity does not mutate the BVH and may be called concurrently
+// with calls on other projectiles.
 func (db *DB) SetProjectileVelocity(x id.ID, v vector.V) {
 	db.GetProjectileOrDie(x).(*projectile.P).SetVelocity(v)
 }
 
-// SetProjectileTargetVelocity mutates the DB, but may be called concurrently
-// with other invocations on different projectiles.
+// SetProjectileTargetVelocity does not mutate the BVH and may be called
+// concurrently with calls on other projectiles.
 func (db *DB) SetProjectileTargetVelocity(x id.ID, v vector.V) {
 	db.GetProjectileOrDie(x).(*projectile.P).SetTargetVelocity(v)
 }
 
-// SetProjectileHeading mutates the DB, but may be called concurrently with
-// other invocations on different projectiles.
+// SetProjectileHeading does not mutate the BVH and may be called concurrently
+// with calls on other projectiles.
 func (db *DB) SetProjectileHeading(x id.ID, v polar.V) {
 	db.GetProjectileOrDie(x).(*projectile.P).SetHeading(v)
 }

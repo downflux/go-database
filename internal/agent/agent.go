@@ -13,7 +13,6 @@ import (
 )
 
 type O struct {
-	ID                 id.ID
 	Position           vector.V
 	Velocity           vector.V
 	TargetVelocity     vector.V
@@ -56,7 +55,6 @@ func New(o O) *A {
 	}
 
 	a := &A{
-		id:                 o.ID,
 		position:           vector.M{0, 0},
 		velocity:           vector.M{0, 0},
 		targetVelocity:     vector.M{0, 0},

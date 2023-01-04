@@ -7,10 +7,13 @@ import (
 	"github.com/downflux/go-database/flags"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 	"github.com/downflux/go-geometry/nd/vector"
+
+	v2d "github.com/downflux/go-geometry/2d/vector"
 )
 
 type O struct {
-	AABB  hyperrectangle.R
+	Min   v2d.V
+	Max   v2d.V
 	Flags flags.F
 }
 
@@ -30,7 +33,8 @@ func New(o O) *F {
 		flags: o.Flags,
 	}
 
-	f.aabb.Copy(o.AABB)
+	f.aabb.Min().Copy(vector.V(o.Min))
+	f.aabb.Max().Copy(vector.V(o.Max))
 
 	return f
 }

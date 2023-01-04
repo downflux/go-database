@@ -19,6 +19,9 @@ import (
 )
 
 var (
+	// DefaultO provides a default set of options for setting up the
+	// database. The values here are tailored to an N = 1000 simulation, and
+	// is dependent on a variety of factors, e.g. surface area coverage.
 	DefaultO = O{
 		LeafSize:  8,
 		Tolerance: 1.15,

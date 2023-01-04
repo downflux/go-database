@@ -10,6 +10,7 @@ import (
 	"github.com/downflux/go-database/internal/feature"
 	"github.com/downflux/go-database/internal/projectile"
 	"github.com/downflux/go-geometry/2d/vector"
+	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
 	roagent "github.com/downflux/go-database/agent"
@@ -105,10 +106,30 @@ func (db *DB) AgentQuery(q hyperrectangle.R, filter func(a roagent.RO) bool) []r
 	return results
 }
 
+// AgentSetPosition mutates the DB and must be called serially.
+func (db *DB) AgentSetPosition(x id.ID, v vector.V) {
+	a := db.AgentGetOrDie(x)
+
+	a.(*agent.A).SetPosition(v)
+	db.agentsBVH.Update(x, a.AABB())
+}
+
+// AgentSetVelocity mutates the DB, but may be called concurently with other
+// invocations on different agents.
+func (db *DB) AgentSetVelocity(x id.ID, v vector.V) {
+	db.AgentGetOrDie(x).(*agent.A).SetVelocity(v)
+}
+
 // AgentSetTargetVelocity mutates the DB, but may be called concurrently with
 // other invocations on different agents.
 func (db *DB) AgentSetTargetVelocity(x id.ID, v vector.V) {
 	db.AgentGetOrDie(x).(*agent.A).SetTargetVelocity(v)
+}
+
+// AgentSetHeading mutates the DB, but may be called concurrently with other
+// invocations on different agents.
+func (db *DB) AgentSetHeading(x id.ID, v polar.V) {
+	db.AgentGetOrDie(x).(*agent.A).SetHeading(v)
 }
 
 // FeatureGetOrDie is a read-only operation and may be called concurrently with
@@ -217,8 +238,28 @@ func (db *DB) ProjectileQuery(q hyperrectangle.R, filter func(a roprojectile.RO)
 	return results
 }
 
-// ProjectileSetTargetVelocity mutates the DB, but may be called concurrently
-// with other invocations on different projectiles.
+// ProjectileSetPosition mutates the DB and must be called serially.
+func (db *DB) ProjectileSetPosition(x id.ID, v vector.V) {
+	a := db.ProjectileGetOrDie(x)
+
+	a.(*projectile.P).SetPosition(v)
+	db.projectilesBVH.Update(x, a.AABB())
+}
+
+// ProjectileSetVelocity mutates the DB, but may be called concurently with other
+// invocations on different projectiles.
+func (db *DB) ProjectileSetVelocity(x id.ID, v vector.V) {
+	db.ProjectileGetOrDie(x).(*projectile.P).SetVelocity(v)
+}
+
+// ProjectileSetTargetVelocity mutates the DB, but may be called concurrently with
+// other invocations on different projectiles.
 func (db *DB) ProjectileSetTargetVelocity(x id.ID, v vector.V) {
 	db.ProjectileGetOrDie(x).(*projectile.P).SetTargetVelocity(v)
+}
+
+// ProjectileSetHeading mutates the DB, but may be called concurrently with other
+// invocations on different projectiles.
+func (db *DB) ProjectileSetHeading(x id.ID, v polar.V) {
+	db.ProjectileGetOrDie(x).(*projectile.P).SetHeading(v)
 }

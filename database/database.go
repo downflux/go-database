@@ -7,9 +7,11 @@ import (
 	"github.com/downflux/go-bvh/container"
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-data/internal/agent"
+	"github.com/downflux/go-data/internal/feature"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
-	pagent "github.com/downflux/go-data/agent"
+	roagent "github.com/downflux/go-data/agent"
+	rofeature "github.com/downflux/go-data/feature"
 )
 
 type O struct {
@@ -18,9 +20,11 @@ type O struct {
 }
 
 type DB struct {
-	agents map[id.ID]*agent.A
+	agents   map[id.ID]*agent.A
+	features map[id.ID]*feature.F
 
-	agentsBVH container.C
+	agentsBVH   container.C
+	featuresBVH container.C
 
 	counter uint64
 }
@@ -32,12 +36,16 @@ func New(o O) *DB {
 			LeafSize:  o.LeafSize,
 			Tolerance: o.Tolerance,
 		}),
+		featuresBVH: bvh.New(bvh.O{
+			LeafSize:  o.LeafSize,
+			Tolerance: o.Tolerance,
+		}),
 	}
 }
 
 // AgentGetOrDie is a read-only operation and may be called concurrently with
 // other read-only operations.
-func (db *DB) AgentGetOrDie(x id.ID) pagent.RO {
+func (db *DB) AgentGetOrDie(x id.ID) roagent.RO {
 	if a, ok := db.agents[x]; !ok {
 		panic(fmt.Sprintf("cannot find agent %v", x))
 	} else {
@@ -46,7 +54,7 @@ func (db *DB) AgentGetOrDie(x id.ID) pagent.RO {
 }
 
 // AgentInsert mutates the DB and must be called serially.
-func (db *DB) AgentInsert(o pagent.O) pagent.RO {
+func (db *DB) AgentInsert(o roagent.O) roagent.RO {
 	x := id.ID(db.counter)
 	db.counter += 1
 
@@ -75,12 +83,65 @@ func (db *DB) AgentDelete(x id.ID) {
 
 // AgentQuery is a read-only operation and may be called concurrently with other
 // read-only operations.
-func (db *DB) AgentQuery(q hyperrectangle.R, filter func(a pagent.RO) bool) []pagent.RO {
+func (db *DB) AgentQuery(q hyperrectangle.R, filter func(a roagent.RO) bool) []roagent.RO {
 	candidates := db.agentsBVH.BroadPhase(q)
 
-	results := make([]pagent.RO, 0, len(candidates))
+	results := make([]roagent.RO, 0, len(candidates))
 	for _, x := range candidates {
 		a := db.agents[x]
+		if filter(a) {
+			results = append(results, a)
+		}
+	}
+	return results
+}
+
+// FeatureGetOrDie is a read-only operation and may be called concurrently with
+// other read-only operations.
+func (db *DB) FeatureGetOrDie(x id.ID) rofeature.RO {
+	if a, ok := db.features[x]; !ok {
+		panic(fmt.Sprintf("cannot find feature %v", x))
+	} else {
+		return a
+	}
+}
+
+// FeatureInsert mutates the DB and must be called serially.
+func (db *DB) FeatureInsert(o rofeature.O) rofeature.RO {
+	x := id.ID(db.counter)
+	db.counter += 1
+
+	a := feature.New(feature.O(o))
+	a.SetID(x)
+
+	db.features[x] = a
+	if err := db.featuresBVH.Insert(x, a.AABB()); err != nil {
+		panic(fmt.Sprintf("cannot insert feature: %v", err))
+	}
+
+	return a
+}
+
+// FeatureDelete mutates the DB and must be called serially.
+func (db *DB) FeatureDelete(x id.ID) {
+	if _, ok := db.features[x]; !ok {
+		panic(fmt.Sprintf("cannot find feature %v", x))
+	}
+
+	delete(db.features, x)
+	if err := db.featuresBVH.Remove(x); err != nil {
+		panic(fmt.Sprintf("cannot delete feature: %v", err))
+	}
+}
+
+// FeatureQuery is a read-only operation and may be called concurrently with other
+// read-only operations.
+func (db *DB) FeatureQuery(q hyperrectangle.R, filter func(a rofeature.RO) bool) []rofeature.RO {
+	candidates := db.featuresBVH.BroadPhase(q)
+
+	results := make([]rofeature.RO, 0, len(candidates))
+	for _, x := range candidates {
+		a := db.features[x]
 		if filter(a) {
 			results = append(results, a)
 		}

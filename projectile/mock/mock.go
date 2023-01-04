@@ -42,6 +42,5 @@ func (p *P) Velocity() vector.V       { return (*projectile.P)(p).Velocity() }
 func (p *P) TargetVelocity() vector.V { return (*projectile.P)(p).TargetVelocity() }
 func (p *P) Heading() polar.V         { return (*projectile.P)(p).Heading() }
 func (p *P) Radius() float64          { return (*projectile.P)(p).Radius() }
-func (p *P) MaxVelocity() float64     { return (*projectile.P)(p).MaxVelocity() }
 func (p *P) Flags() flags.F           { return (*projectile.P)(p).Flags() }
 func (p *P) AABB() hyperrectangle.R   { return (*projectile.P)(p).AABB() }

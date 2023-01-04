@@ -84,6 +84,20 @@ func (db *DB) AgentInsert(o roagent.O) roagent.RO {
 	return a
 }
 
+// AgentList returns all agents in the DB and may be called concurrently with
+// other read-only operations. All values must be consumed (or the channel is
+// garbage collected) before a DB mutation occurs.
+func (db *DB) AgentList() <-chan roagent.RO {
+	ch := make(chan roagent.RO, 256)
+	go func(ch chan<- roagent.RO) {
+		defer close(ch)
+		for _, a := range db.agents {
+			ch <- a
+		}
+	}(ch)
+	return ch
+}
+
 // AgentDelete mutates the DB and must be called serially.
 func (db *DB) AgentDelete(x id.ID) {
 	if _, ok := db.agents[x]; !ok {
@@ -163,6 +177,20 @@ func (db *DB) FeatureInsert(o rofeature.O) rofeature.RO {
 	return a
 }
 
+// FeatureList returns all features in the DB and may be called concurrently
+// with other read-only operations. All values must be consumed (or the channel
+// is garbage collected) before a DB mutation occurs.
+func (db *DB) FeatureList() <-chan rofeature.RO {
+	ch := make(chan rofeature.RO, 256)
+	go func(ch chan<- rofeature.RO) {
+		defer close(ch)
+		for _, a := range db.features {
+			ch <- a
+		}
+	}(ch)
+	return ch
+}
+
 // FeatureDelete mutates the DB and must be called serially.
 func (db *DB) FeatureDelete(x id.ID) {
 	if _, ok := db.features[x]; !ok {
@@ -210,6 +238,20 @@ func (db *DB) ProjectileInsert(o roprojectile.O) roprojectile.RO {
 
 	db.projectiles[x] = a
 	return a
+}
+
+// ProjectileList returns all projectiles in the DB and may be called
+// concurrently with other read-only operations. All values must be consumed (or
+// the channel is garbage collected) before a DB mutation occurs.
+func (db *DB) ProjectileList() <-chan roprojectile.RO {
+	ch := make(chan roprojectile.RO, 256)
+	go func(ch chan<- roprojectile.RO) {
+		defer close(ch)
+		for _, a := range db.projectiles {
+			ch <- a
+		}
+	}(ch)
+	return ch
 }
 
 // ProjectileDelete mutates the DB and must be called serially.

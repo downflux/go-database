@@ -18,7 +18,6 @@ type O struct {
 	TargetVelocity vector.V
 	Heading        polar.V
 	Radius         float64
-	MaxVelocity    float64
 	Flags          flags.F
 }
 
@@ -29,7 +28,6 @@ type P struct {
 	targetVelocity vector.M
 	heading        polar.M
 	radius         float64
-	maxVelocity    float64
 	flags          flags.F
 }
 
@@ -44,7 +42,6 @@ func New(o O) *P {
 		targetVelocity: vector.M{0, 0},
 		heading:        polar.M{0, 0},
 		radius:         o.Radius,
-		maxVelocity:    o.MaxVelocity,
 		flags:          o.Flags,
 	}
 
@@ -56,10 +53,9 @@ func New(o O) *P {
 	return p
 }
 
-func (p *P) ID() id.ID            { return p.id }
-func (p *P) Flags() flags.F       { return p.flags }
-func (p *P) Radius() float64      { return p.radius }
-func (p *P) MaxVelocity() float64 { return p.maxVelocity }
+func (p *P) ID() id.ID       { return p.id }
+func (p *P) Flags() flags.F  { return p.flags }
+func (p *P) Radius() float64 { return p.radius }
 
 func (p *P) Position() vector.V {
 	buf := vector.M{0, 0}

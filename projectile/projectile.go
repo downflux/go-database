@@ -21,8 +21,6 @@ type RO interface {
 
 	Radius() float64
 
-	MaxVelocity() float64
-
 	Flags() flags.F
 
 	AABB() hyperrectangle.R

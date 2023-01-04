@@ -28,9 +28,8 @@ type DB struct {
 	features    map[id.ID]*feature.F
 	projectiles map[id.ID]*projectile.P
 
-	agentsBVH      container.C
-	featuresBVH    container.C
-	projectilesBVH container.C
+	agentsBVH   container.C
+	featuresBVH container.C
 
 	counter uint64
 }
@@ -43,10 +42,6 @@ func New(o O) *DB {
 			Tolerance: o.Tolerance,
 		}),
 		featuresBVH: bvh.New(bvh.O{
-			LeafSize:  o.LeafSize,
-			Tolerance: o.Tolerance,
-		}),
-		projectilesBVH: bvh.New(bvh.O{
 			LeafSize:  o.LeafSize,
 			Tolerance: o.Tolerance,
 		}),
@@ -204,10 +199,6 @@ func (db *DB) ProjectileInsert(o roprojectile.O) roprojectile.RO {
 	a.SetID(x)
 
 	db.projectiles[x] = a
-	if err := db.projectilesBVH.Insert(x, a.AABB()); err != nil {
-		panic(fmt.Sprintf("cannot insert projectile: %v", err))
-	}
-
 	return a
 }
 
@@ -218,48 +209,30 @@ func (db *DB) ProjectileDelete(x id.ID) {
 	}
 
 	delete(db.projectiles, x)
-	if err := db.projectilesBVH.Remove(x); err != nil {
-		panic(fmt.Sprintf("cannot delete projectile: %v", err))
-	}
 }
 
-// ProjectileQuery is a read-only operation and may be called concurrently with other
-// read-only operations.
-func (db *DB) ProjectileQuery(q hyperrectangle.R, filter func(a roprojectile.RO) bool) []roprojectile.RO {
-	candidates := db.projectilesBVH.BroadPhase(q)
-
-	results := make([]roprojectile.RO, 0, len(candidates))
-	for _, x := range candidates {
-		a := db.projectiles[x]
-		if filter(a) {
-			results = append(results, a)
-		}
-	}
-	return results
-}
-
-// ProjectileSetPosition mutates the DB and must be called serially.
+// ProjectileSetPosition mutates the DB, but may be called concurrently with
+// other invocations on different projectiles.
 func (db *DB) ProjectileSetPosition(x id.ID, v vector.V) {
 	a := db.ProjectileGetOrDie(x)
 
 	a.(*projectile.P).SetPosition(v)
-	db.projectilesBVH.Update(x, a.AABB())
 }
 
-// ProjectileSetVelocity mutates the DB, but may be called concurently with other
-// invocations on different projectiles.
+// ProjectileSetVelocity mutates the DB, but may be called concurently with
+// other invocations on different projectiles.
 func (db *DB) ProjectileSetVelocity(x id.ID, v vector.V) {
 	db.ProjectileGetOrDie(x).(*projectile.P).SetVelocity(v)
 }
 
-// ProjectileSetTargetVelocity mutates the DB, but may be called concurrently with
-// other invocations on different projectiles.
+// ProjectileSetTargetVelocity mutates the DB, but may be called concurrently
+// with other invocations on different projectiles.
 func (db *DB) ProjectileSetTargetVelocity(x id.ID, v vector.V) {
 	db.ProjectileGetOrDie(x).(*projectile.P).SetTargetVelocity(v)
 }
 
-// ProjectileSetHeading mutates the DB, but may be called concurrently with other
-// invocations on different projectiles.
+// ProjectileSetHeading mutates the DB, but may be called concurrently with
+// other invocations on different projectiles.
 func (db *DB) ProjectileSetHeading(x id.ID, v polar.V) {
 	db.ProjectileGetOrDie(x).(*projectile.P).SetHeading(v)
 }

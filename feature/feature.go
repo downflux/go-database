@@ -11,6 +11,8 @@ type O feature.O
 
 type RO interface {
 	ID() id.ID
-	AABB() hyperrectangle.R
+
 	Flags() flags.F
+
+	AABB() hyperrectangle.R
 }

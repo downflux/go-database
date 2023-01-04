@@ -1,4 +1,4 @@
-module github.com/downflux/go-data
+module github.com/downflux/go-database
 
 go 1.19
 

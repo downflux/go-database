@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/downflux/go-bvh/id"
-	"github.com/downflux/go-data/flags"
+	"github.com/downflux/go-database/flags"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 )
 

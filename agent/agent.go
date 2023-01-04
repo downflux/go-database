@@ -2,8 +2,8 @@ package agent
 
 import (
 	"github.com/downflux/go-bvh/id"
-	"github.com/downflux/go-data/flags"
-	"github.com/downflux/go-data/internal/agent"
+	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/internal/agent"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"

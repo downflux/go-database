@@ -6,12 +6,12 @@ import (
 	"github.com/downflux/go-bvh/bvh"
 	"github.com/downflux/go-bvh/container"
 	"github.com/downflux/go-bvh/id"
-	"github.com/downflux/go-data/internal/agent"
-	"github.com/downflux/go-data/internal/feature"
+	"github.com/downflux/go-database/internal/agent"
+	"github.com/downflux/go-database/internal/feature"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
-	roagent "github.com/downflux/go-data/agent"
-	rofeature "github.com/downflux/go-data/feature"
+	roagent "github.com/downflux/go-database/agent"
+	rofeature "github.com/downflux/go-database/feature"
 )
 
 type O struct {

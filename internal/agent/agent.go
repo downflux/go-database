@@ -18,6 +18,7 @@ type O struct {
 	TargetVelocity     vector.V
 	Heading            polar.V
 	Radius             float64
+	Mass               float64
 	MaxVelocity        float64
 	MaxAngularVelocity float64
 	MaxAcceleration    float64
@@ -41,6 +42,7 @@ type A struct {
 	heading polar.M
 
 	radius float64
+	mass   float64
 
 	maxVelocity        float64
 	maxAngularVelocity float64
@@ -60,6 +62,7 @@ func New(o O) *A {
 		targetVelocity:     vector.M{0, 0},
 		heading:            polar.M{0, 0},
 		radius:             o.Radius,
+		mass:               o.Mass,
 		maxVelocity:        o.MaxVelocity,
 		maxAngularVelocity: o.MaxAngularVelocity,
 		maxAcceleration:    o.MaxAcceleration,
@@ -77,6 +80,7 @@ func New(o O) *A {
 func (a *A) ID() id.ID                   { return a.id }
 func (a *A) Flags() flags.F              { return a.flags }
 func (a *A) Radius() float64             { return a.radius }
+func (a *A) Mass() float64               { return a.mass }
 func (a *A) MaxVelocity() float64        { return a.maxVelocity }
 func (a *A) MaxAngularVelocity() float64 { return a.maxAngularVelocity }
 func (a *A) MaxAcceleration() float64    { return a.maxAcceleration }

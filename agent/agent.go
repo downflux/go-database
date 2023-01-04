@@ -20,6 +20,7 @@ type RO interface {
 	Heading() polar.V
 
 	Radius() float64
+	Mass() float64
 
 	MaxVelocity() float64
 	MaxAngularVelocity() float64

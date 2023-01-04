@@ -50,7 +50,7 @@ type A struct {
 }
 
 func New(o O) *A {
-	if !flags.Validate(o.Flags) {
+	if !Validate(o.Flags) {
 		panic(fmt.Sprintf("cannot create agent: invalid mask %v", o.Flags))
 	}
 
@@ -126,4 +126,16 @@ func (a *A) AABB() hyperrectangle.R {
 			y + r,
 		},
 	)
+}
+
+func Validate(f flags.F) bool {
+	if f&flags.FSizeProjectile != 0 {
+		return false
+	}
+
+	if f&(flags.SizeCheck) == 0 {
+		return false
+	}
+
+	return flags.Validate(f)
 }

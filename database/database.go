@@ -46,12 +46,16 @@ type DB struct {
 
 func New(o O) *DB {
 	return &DB{
-		agents: make(map[id.ID]*agent.A, 1024),
+		agents:      make(map[id.ID]*agent.A, 1024),
+		features:    make(map[id.ID]*feature.F, 1024),
+		projectiles: make(map[id.ID]*projectile.P, 1024),
 		agentsBVH: bvh.New(bvh.O{
+			K:         2,
 			LeafSize:  o.LeafSize,
 			Tolerance: o.Tolerance,
 		}),
 		featuresBVH: bvh.New(bvh.O{
+			K:         2,
 			LeafSize:  o.LeafSize,
 			Tolerance: o.Tolerance,
 		}),

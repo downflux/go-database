@@ -32,7 +32,7 @@ type P struct {
 }
 
 func New(o O) *P {
-	if !flags.Validate(o.Flags) {
+	if !Validate(o.Flags) {
 		panic(fmt.Sprintf("cannot create agent: invalid mask %v", o.Flags))
 	}
 
@@ -102,4 +102,11 @@ func (p *P) AABB() hyperrectangle.R {
 		},
 	)
 
+}
+
+func Validate(f flags.F) bool {
+	if f&flags.FSizeProjectile == 0 {
+		return false
+	}
+	return flags.Validate(f)
 }

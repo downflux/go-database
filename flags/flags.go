@@ -35,9 +35,8 @@ const (
 	SizeCheck = FSizeProjectile | FSizeSmall | FSizeFedium | FSizeLarge
 )
 
-// Validate ensures the input mask is valid.
-//
-// TODO(minkezhang): Ensure e.g. a size must be set.
+// Validate ensures the input mask is valid. Additional checks may be added on
+// top of this for per-instance validation.
 func Validate(m F) bool {
 	n := 0
 	if m&FSizeProjectile != 0 {

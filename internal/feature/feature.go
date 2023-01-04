@@ -24,7 +24,7 @@ type F struct {
 }
 
 func New(o O) *F {
-	if !flags.Validate(o.Flags) {
+	if !Validate(o.Flags) {
 		panic(fmt.Sprintf("cannot create feature: invalid mask %v", o.Flags))
 	}
 
@@ -50,3 +50,10 @@ func (f *F) AABB() hyperrectangle.R {
 
 func (f *F) SetID(x id.ID)      { f.id = x }
 func (f *F) SetFlags(g flags.F) { f.flags = g }
+
+func Validate(f flags.F) bool {
+	if f&flags.SizeCheck != 0 {
+		return false
+	}
+	return flags.Validate(f)
+}

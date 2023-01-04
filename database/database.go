@@ -8,10 +8,12 @@ import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/internal/agent"
 	"github.com/downflux/go-database/internal/feature"
+	"github.com/downflux/go-database/internal/projectile"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
 	roagent "github.com/downflux/go-database/agent"
 	rofeature "github.com/downflux/go-database/feature"
+	roprojectile "github.com/downflux/go-database/projectile"
 )
 
 type O struct {
@@ -20,11 +22,13 @@ type O struct {
 }
 
 type DB struct {
-	agents   map[id.ID]*agent.A
-	features map[id.ID]*feature.F
+	agents      map[id.ID]*agent.A
+	features    map[id.ID]*feature.F
+	projectiles map[id.ID]*projectile.P
 
-	agentsBVH   container.C
-	featuresBVH container.C
+	agentsBVH      container.C
+	featuresBVH    container.C
+	projectilesBVH container.C
 
 	counter uint64
 }
@@ -37,6 +41,10 @@ func New(o O) *DB {
 			Tolerance: o.Tolerance,
 		}),
 		featuresBVH: bvh.New(bvh.O{
+			LeafSize:  o.LeafSize,
+			Tolerance: o.Tolerance,
+		}),
+		projectilesBVH: bvh.New(bvh.O{
 			LeafSize:  o.LeafSize,
 			Tolerance: o.Tolerance,
 		}),
@@ -142,6 +150,59 @@ func (db *DB) FeatureQuery(q hyperrectangle.R, filter func(a rofeature.RO) bool)
 	results := make([]rofeature.RO, 0, len(candidates))
 	for _, x := range candidates {
 		a := db.features[x]
+		if filter(a) {
+			results = append(results, a)
+		}
+	}
+	return results
+}
+
+// ProjectileGetOrDie is a read-only operation and may be called concurrently with
+// other read-only operations.
+func (db *DB) ProjectileGetOrDie(x id.ID) roprojectile.RO {
+	if a, ok := db.projectiles[x]; !ok {
+		panic(fmt.Sprintf("cannot find projectile %v", x))
+	} else {
+		return a
+	}
+}
+
+// ProjectileInsert mutates the DB and must be called serially.
+func (db *DB) ProjectileInsert(o roprojectile.O) roprojectile.RO {
+	x := id.ID(db.counter)
+	db.counter += 1
+
+	a := projectile.New(projectile.O(o))
+	a.SetID(x)
+
+	db.projectiles[x] = a
+	if err := db.projectilesBVH.Insert(x, a.AABB()); err != nil {
+		panic(fmt.Sprintf("cannot insert projectile: %v", err))
+	}
+
+	return a
+}
+
+// ProjectileDelete mutates the DB and must be called serially.
+func (db *DB) ProjectileDelete(x id.ID) {
+	if _, ok := db.projectiles[x]; !ok {
+		panic(fmt.Sprintf("cannot find projectile %v", x))
+	}
+
+	delete(db.projectiles, x)
+	if err := db.projectilesBVH.Remove(x); err != nil {
+		panic(fmt.Sprintf("cannot delete projectile: %v", err))
+	}
+}
+
+// ProjectileQuery is a read-only operation and may be called concurrently with other
+// read-only operations.
+func (db *DB) ProjectileQuery(q hyperrectangle.R, filter func(a roprojectile.RO) bool) []roprojectile.RO {
+	candidates := db.projectilesBVH.BroadPhase(q)
+
+	results := make([]roprojectile.RO, 0, len(candidates))
+	for _, x := range candidates {
+		a := db.projectiles[x]
 		if filter(a) {
 			results = append(results, a)
 		}

@@ -42,6 +42,7 @@ func (a *A) Velocity() vector.V          { return (*agent.A)(a).Velocity() }
 func (a *A) TargetVelocity() vector.V    { return (*agent.A)(a).TargetVelocity() }
 func (a *A) Heading() polar.V            { return (*agent.A)(a).Heading() }
 func (a *A) Radius() float64             { return (*agent.A)(a).Radius() }
+func (a *A) Mass() float64               { return (*agent.A)(a).Mass() }
 func (a *A) MaxVelocity() float64        { return (*agent.A)(a).MaxVelocity() }
 func (a *A) MaxAngularVelocity() float64 { return (*agent.A)(a).MaxAngularVelocity() }
 func (a *A) MaxAcceleration() float64    { return (*agent.A)(a).MaxAcceleration() }

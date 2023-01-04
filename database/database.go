@@ -9,6 +9,7 @@ import (
 	"github.com/downflux/go-database/internal/agent"
 	"github.com/downflux/go-database/internal/feature"
 	"github.com/downflux/go-database/internal/projectile"
+	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
 	roagent "github.com/downflux/go-database/agent"
@@ -102,6 +103,12 @@ func (db *DB) AgentQuery(q hyperrectangle.R, filter func(a roagent.RO) bool) []r
 		}
 	}
 	return results
+}
+
+// AgentSetTargetVelocity mutates the DB, but may be called concurrently with
+// other invocations on different agents.
+func (db *DB) AgentSetTargetVelocity(x id.ID, v vector.V) {
+	db.AgentGetOrDie(x).(*agent.A).SetTargetVelocity(v)
 }
 
 // FeatureGetOrDie is a read-only operation and may be called concurrently with
@@ -208,4 +215,10 @@ func (db *DB) ProjectileQuery(q hyperrectangle.R, filter func(a roprojectile.RO)
 		}
 	}
 	return results
+}
+
+// ProjectileSetTargetVelocity mutates the DB, but may be called concurrently
+// with other invocations on different projectiles.
+func (db *DB) ProjectileSetTargetVelocity(x id.ID, v vector.V) {
+	db.ProjectileGetOrDie(x).(*projectile.P).SetTargetVelocity(v)
 }

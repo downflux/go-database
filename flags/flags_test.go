@@ -46,7 +46,7 @@ func TestValidate(t *testing.T) {
 
 	for _, c := range configs {
 		t.Run(c.name, func(t *testing.T) {
-			if got := Validate(c.m); got != c.want {
+			if got := Validate(c.f); got != c.want {
 				t.Errorf("Validate() = %v, want = %v", got, c.want)
 			}
 		})

@@ -18,6 +18,13 @@ import (
 	roprojectile "github.com/downflux/go-database/projectile"
 )
 
+var (
+	DefaultO = O{
+		LeafSize:  8,
+		Tolerance: 1.15,
+	}
+)
+
 type O struct {
 	LeafSize  int
 	Tolerance float64

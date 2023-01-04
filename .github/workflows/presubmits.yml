@@ -1,0 +1,26 @@
+name: CI Presubmits
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ "*" ]
+
+jobs:
+
+  presubmit:
+    name: CI Presubmits
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-go@v2
+      with:
+        go-version: 1.19
+
+    - name: Build github.com/downflux/go-database
+      run: go vet github.com/downflux/go-database/...
+
+    - name: Test github.com/downflux/go-database
+      run: go test github.com/downflux/go-database/... -bench . -benchmem

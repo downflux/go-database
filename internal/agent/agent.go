@@ -14,6 +14,7 @@ import (
 
 type O struct {
 	Position           vector.V
+	TargetPosition     vector.V
 	Velocity           vector.V
 	TargetVelocity     vector.V
 	Heading            polar.V
@@ -28,7 +29,8 @@ type O struct {
 type A struct {
 	id id.ID
 
-	position vector.M
+	position       vector.M
+	targetPosition vector.M
 
 	// velocity is the actual tick-to-tick velocity. This is used for smoothing
 	// over acceleration values.
@@ -58,6 +60,7 @@ func New(o O) *A {
 
 	a := &A{
 		position:           vector.M{0, 0},
+		targetPosition:     vector.M{0, 0},
 		velocity:           vector.M{0, 0},
 		targetVelocity:     vector.M{0, 0},
 		heading:            polar.M{0, 0},
@@ -70,6 +73,7 @@ func New(o O) *A {
 	}
 
 	a.position.Copy(o.Position)
+	a.targetPosition.Copy(o.TargetPosition)
 	a.velocity.Copy(o.Velocity)
 	a.targetVelocity.Copy(o.TargetVelocity)
 	a.heading.Copy(o.Heading)
@@ -88,6 +92,12 @@ func (a *A) MaxAcceleration() float64    { return a.maxAcceleration }
 func (a *A) Position() vector.V {
 	buf := vector.M{0, 0}
 	buf.Copy(a.position.V())
+	return buf.V()
+}
+
+func (a *A) TargetPosition() vector.V {
+	buf := vector.M{0, 0}
+	buf.Copy(a.targetPosition.V())
 	return buf.V()
 }
 
@@ -111,6 +121,7 @@ func (a *A) Heading() polar.V {
 
 func (a *A) SetID(x id.ID)                { a.id = x }
 func (a *A) SetPosition(v vector.V)       { a.position.Copy(v) }
+func (a *A) SetTargetPosition(v vector.V) { a.targetPosition.Copy(v) }
 func (a *A) SetVelocity(v vector.V)       { a.velocity.Copy(v) }
 func (a *A) SetTargetVelocity(v vector.V) { a.targetVelocity.Copy(v) }
 func (a *A) SetHeading(v polar.V)         { a.heading.Copy(v) }

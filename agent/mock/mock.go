@@ -21,6 +21,9 @@ func New(x id.ID, o roagent.O) *A {
 	if o.Position == nil {
 		(&o).Position = vector.V{0, 0}
 	}
+	if o.TargetPosition == nil {
+		(&o).TargetPosition = vector.V{0, 0}
+	}
 	if o.Velocity == nil {
 		(&o).Velocity = vector.V{0, 0}
 	}
@@ -38,6 +41,7 @@ func New(x id.ID, o roagent.O) *A {
 
 func (a *A) ID() id.ID                   { return (*agent.A)(a).ID() }
 func (a *A) Position() vector.V          { return (*agent.A)(a).Position() }
+func (a *A) TargetPosition() vector.V    { return (*agent.A)(a).TargetPosition() }
 func (a *A) Velocity() vector.V          { return (*agent.A)(a).Velocity() }
 func (a *A) TargetVelocity() vector.V    { return (*agent.A)(a).TargetVelocity() }
 func (a *A) Heading() polar.V            { return (*agent.A)(a).Heading() }

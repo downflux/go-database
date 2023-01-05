@@ -38,6 +38,7 @@ func New(x id.ID, o roprojectile.O) *P {
 
 func (p *P) ID() id.ID                { return (*projectile.P)(p).ID() }
 func (p *P) Position() vector.V       { return (*projectile.P)(p).Position() }
+func (p *P) TargetPosition() vector.V { return (*projectile.P)(p).TargetPosition() }
 func (p *P) Velocity() vector.V       { return (*projectile.P)(p).Velocity() }
 func (p *P) TargetVelocity() vector.V { return (*projectile.P)(p).TargetVelocity() }
 func (p *P) Heading() polar.V         { return (*projectile.P)(p).Heading() }

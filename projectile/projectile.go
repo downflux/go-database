@@ -15,6 +15,7 @@ type RO interface {
 	ID() id.ID
 
 	Position() vector.V
+	TargetPosition() vector.V
 	Velocity() vector.V
 	TargetVelocity() vector.V
 	Heading() polar.V

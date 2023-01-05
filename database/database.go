@@ -256,6 +256,12 @@ func (db *DB) SetAgentPosition(x id.ID, v vector.V) {
 	db.agentsBVH.Update(x, a.AABB())
 }
 
+// SetAgentTargetPosition does not mutate the BVH and may be called concurrently
+// with calls on other agents.
+func (db *DB) SetAgentTargetPosition(x id.ID, v vector.V) {
+	db.GetAgentOrDie(x).(*agent.A).SetTargetPosition(v)
+}
+
 // SetAgentVelocity does not mutate the BVH and may be called concurrently with
 // calls on other agents.
 func (db *DB) SetAgentVelocity(x id.ID, v vector.V) {
@@ -278,6 +284,12 @@ func (db *DB) SetAgentHeading(x id.ID, v polar.V) {
 // with calls on other projectiles.
 func (db *DB) SetProjectilePosition(x id.ID, v vector.V) {
 	db.GetProjectileOrDie(x).(*projectile.P).SetPosition(v)
+}
+
+// SetProjectileTargetPosition does not mutate the BVH and may be called
+// concurrently with calls on other projectiles.
+func (db *DB) SetProjectileTargetPosition(x id.ID, v vector.V) {
+	db.GetProjectileOrDie(x).(*projectile.P).SetTargetPosition(v)
 }
 
 // SetProjectileVelocity does not mutate the BVH and may be called concurrently

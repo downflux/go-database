@@ -21,6 +21,9 @@ func New(x id.ID, o roprojectile.O) *P {
 	if o.Position == nil {
 		(&o).Position = vector.V{0, 0}
 	}
+	if o.TargetPosition == nil {
+		(&o).TargetPosition = vector.V{0, 0}
+	}
 	if o.Velocity == nil {
 		(&o).Velocity = vector.V{0, 0}
 	}

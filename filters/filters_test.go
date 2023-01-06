@@ -10,7 +10,7 @@ import (
 	"github.com/downflux/go-geometry/2d/vector/polar"
 )
 
-func TestIsColliding(t *testing.T) {
+func TestAgentIsColliding(t *testing.T) {
 	type config struct {
 		name string
 		a    agent.RO
@@ -81,8 +81,8 @@ func TestIsColliding(t *testing.T) {
 
 	for _, c := range configs {
 		t.Run(c.name, func(t *testing.T) {
-			if got := IsColliding(c.a, c.b); got != c.want {
-				t.Errorf("IsColliding() = %v, want = %v", got, c.want)
+			if got := AgentIsColliding(c.a, c.b); got != c.want {
+				t.Errorf("AgentIsColliding() = %v, want = %v", got, c.want)
 			}
 		})
 	}

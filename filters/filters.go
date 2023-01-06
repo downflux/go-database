@@ -10,17 +10,30 @@ import (
 	dhr "github.com/downflux/go-database/internal/geometry/hyperrectangle"
 )
 
-// IsColliding checks if two agents are actually physically overlapping. This
-// does not care about the extra logic for e.g. squishing.
-func IsColliding(a agent.RO, b agent.RO) bool {
+func AgentOnDifferentLayers(a agent.RO, b agent.RO) bool {
+	m, n := a.Flags(), b.Flags()
+
+	// Agents are allowed to overlap if (only) one of them is in the air.
+	return (m^n)&flags.FTerrainAir == flags.FTerrainAir
+}
+
+// AgentIsSquishable checks if the agent a may be run over by b.
+//
+// TODO(minkezhang): Check if the agents are on the same team.
+func AgentIsSquishable(a agent.RO, b agent.RO) bool {
+	if AgentOnDifferentLayers(a, b) {
+		return false
+	}
+	return a.Flags()&flags.SizeCheck > b.Flags()&flags.SizeCheck
+}
+
+// AgentIsColliding checks if two agents are actually physically overlapping.
+func AgentIsColliding(a agent.RO, b agent.RO) bool {
 	if a.ID() == b.ID() {
 		return false
 	}
 
-	m, n := a.Flags(), b.Flags()
-
-	// Agents are allowed to overlap if (only) one of them is in the air.
-	if (m^n)&flags.FTerrainAir == flags.FTerrainAir {
+	if AgentOnDifferentLayers(a, b) {
 		return false
 	}
 
@@ -32,18 +45,11 @@ func IsColliding(a agent.RO, b agent.RO) bool {
 
 }
 
-func IsSquishableColliding(a agent.RO, b agent.RO) bool {
-	if IsColliding(a, b) {
-		// TODO(minkezhang): Check for team.
-		if a.Flags()&flags.SizeCheck > b.Flags()&flags.SizeCheck {
-			return false
-		}
-		return true
-	}
-	return false
+func AgentIsCollidingSquishable(a agent.RO, b agent.RO) bool {
+	return AgentIsSquishable(a, b) && AgentIsColliding(a, b)
 }
 
-func IsCollidingFeature(a agent.RO, f feature.RO) bool {
+func AgentIsCollidingWithFeature(a agent.RO, f feature.RO) bool {
 	m, n := a.Flags(), f.Flags()
 
 	// Feature and agent are allowed to overlap if (only) one of them is in

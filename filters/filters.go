@@ -7,7 +7,7 @@ import (
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
-	dhr "github.com/downflux/go-database/internal/geometry/hyperrectangle"
+	dhr "github.com/downflux/go-database/geometry/hyperrectangle"
 )
 
 func AgentOnDifferentLayers(a agent.RO, b agent.RO) bool {

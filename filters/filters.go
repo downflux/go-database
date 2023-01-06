@@ -45,8 +45,8 @@ func AgentIsColliding(a agent.RO, b agent.RO) bool {
 
 }
 
-func AgentIsCollidingSquishable(a agent.RO, b agent.RO) bool {
-	return AgentIsSquishable(a, b) && AgentIsColliding(a, b)
+func AgentIsCollidingNotSquishable(a agent.RO, b agent.RO) bool {
+	return !AgentIsSquishable(a, b) && AgentIsColliding(a, b)
 }
 
 func AgentIsCollidingWithFeature(a agent.RO, f feature.RO) bool {

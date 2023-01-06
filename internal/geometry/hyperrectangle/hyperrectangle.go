@@ -90,7 +90,7 @@ func Normal(r hyperrectangle.R, v vector.V) vector.V {
 	return n.V()
 }
 
-// CollideCircle checks if a circle overlaps an AABB. Note that this can be
+// IntersectCircle checks if a circle overlaps an AABB. Note that this can be
 // decomposed into three checks --
 //
 //  1. if the circle center lies inside the rectangle,
@@ -99,7 +99,7 @@ func Normal(r hyperrectangle.R, v vector.V) vector.V {
 //     circle center
 //
 // See https://stackoverflow.com/a/402019/873865 for more information.
-func CollideCircle(r hyperrectangle.R, p vector.V, radius float64) bool {
+func IntersectCircle(r hyperrectangle.R, p vector.V, radius float64) bool {
 	if r.In(vnd.V(p)) {
 		return true
 	}

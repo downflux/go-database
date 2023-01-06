@@ -70,7 +70,7 @@ func TestNormal(t *testing.T) {
 	}
 }
 
-func TestCollideCircle(t *testing.T) {
+func TestIntersectCircle(t *testing.T) {
 	type config struct {
 		name   string
 		r      hyperrectangle.R
@@ -112,8 +112,8 @@ func TestCollideCircle(t *testing.T) {
 
 	for _, c := range configs {
 		t.Run(c.name, func(t *testing.T) {
-			if got := CollideCircle(c.r, c.p, c.radius); got != c.want {
-				t.Errorf("CollideCircle() = %v, want = %v", got, c.want)
+			if got := IntersectCircle(c.r, c.p, c.radius); got != c.want {
+				t.Errorf("IntersectCircle() = %v, want = %v", got, c.want)
 			}
 		})
 	}

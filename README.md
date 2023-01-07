@@ -1,2 +1,2 @@
-# go-data
+# go-database
 Golang data structs for Downflux

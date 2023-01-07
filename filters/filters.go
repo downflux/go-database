@@ -19,7 +19,7 @@ func AgentOnDifferentLayers(a agent.RO, b agent.RO) bool {
 
 // AgentIsSquishable checks if the agent a may be run over by b.
 func AgentIsSquishable(a agent.RO, b agent.RO) bool {
-	if a.Team() == b.Team() {
+	if AgentIsTeammate(a, b) {
 		return false
 	}
 	if AgentOnDifferentLayers(a, b) {
@@ -27,6 +27,8 @@ func AgentIsSquishable(a agent.RO, b agent.RO) bool {
 	}
 	return a.Flags()&flags.SizeCheck > b.Flags()&flags.SizeCheck
 }
+
+func AgentIsTeammate(a agent.RO, b agent.RO) bool { return a.Team() == b.Team() }
 
 // AgentIsColliding checks if two agents are actually physically overlapping.
 func AgentIsColliding(a agent.RO, b agent.RO) bool {

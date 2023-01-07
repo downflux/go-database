@@ -4,6 +4,7 @@ import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
 	"github.com/downflux/go-database/internal/projectile"
+	"github.com/downflux/go-database/team"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
@@ -47,4 +48,5 @@ func (p *P) TargetVelocity() vector.V { return (*projectile.P)(p).TargetVelocity
 func (p *P) Heading() polar.V         { return (*projectile.P)(p).Heading() }
 func (p *P) Radius() float64          { return (*projectile.P)(p).Radius() }
 func (p *P) Flags() flags.F           { return (*projectile.P)(p).Flags() }
+func (p *P) Team() team.T             { return (*projectile.P)(p).Team() }
 func (p *P) AABB() hyperrectangle.R   { return (*projectile.P)(p).AABB() }

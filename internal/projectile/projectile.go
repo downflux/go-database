@@ -5,6 +5,7 @@ import (
 
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/team"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
@@ -20,6 +21,7 @@ type O struct {
 	Heading        polar.V
 	Radius         float64
 	Flags          flags.F
+	Team           team.T
 }
 
 type P struct {
@@ -31,6 +33,7 @@ type P struct {
 	heading        polar.M
 	radius         float64
 	flags          flags.F
+	team           team.T
 }
 
 func New(o O) *P {
@@ -46,6 +49,7 @@ func New(o O) *P {
 		heading:        polar.M{0, 0},
 		radius:         o.Radius,
 		flags:          o.Flags,
+		team:           o.Team,
 	}
 
 	p.position.Copy(o.Position)
@@ -59,6 +63,7 @@ func New(o O) *P {
 
 func (p *P) ID() id.ID       { return p.id }
 func (p *P) Flags() flags.F  { return p.flags }
+func (p *P) Team() team.T    { return p.team }
 func (p *P) Radius() float64 { return p.radius }
 
 func (p *P) Position() vector.V {

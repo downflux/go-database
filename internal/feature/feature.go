@@ -5,6 +5,7 @@ import (
 
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/team"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 	"github.com/downflux/go-geometry/nd/vector"
 
@@ -15,12 +16,14 @@ type O struct {
 	Min   v2d.V
 	Max   v2d.V
 	Flags flags.F
+	Team  team.T
 }
 
 type F struct {
 	id    id.ID
 	aabb  hyperrectangle.M
 	flags flags.F
+	team  team.T
 }
 
 func New(o O) *F {
@@ -31,6 +34,7 @@ func New(o O) *F {
 	f := &F{
 		aabb:  hyperrectangle.New(vector.V{0, 0}, vector.V{0, 0}).M(),
 		flags: o.Flags,
+		team:  o.Team,
 	}
 
 	f.aabb.Min().Copy(vector.V(o.Min))
@@ -41,6 +45,7 @@ func New(o O) *F {
 
 func (f *F) ID() id.ID      { return f.id }
 func (f *F) Flags() flags.F { return f.flags }
+func (f *F) Team() team.T   { return f.team }
 
 func (f *F) AABB() hyperrectangle.R {
 	buf := hyperrectangle.New(vector.V{0, 0}, vector.V{0, 0}).M()

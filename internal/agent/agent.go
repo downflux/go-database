@@ -5,6 +5,7 @@ import (
 
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/team"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
@@ -24,6 +25,7 @@ type O struct {
 	MaxAngularVelocity float64
 	MaxAcceleration    float64
 	Flags              flags.F
+	Team               team.T
 }
 
 type A struct {
@@ -51,6 +53,7 @@ type A struct {
 	maxAcceleration    float64
 
 	flags flags.F
+	team  team.T
 }
 
 func New(o O) *A {
@@ -70,6 +73,7 @@ func New(o O) *A {
 		maxAngularVelocity: o.MaxAngularVelocity,
 		maxAcceleration:    o.MaxAcceleration,
 		flags:              o.Flags,
+		team:               o.Team,
 	}
 
 	a.position.Copy(o.Position)
@@ -83,6 +87,7 @@ func New(o O) *A {
 
 func (a *A) ID() id.ID                   { return a.id }
 func (a *A) Flags() flags.F              { return a.flags }
+func (a *A) Team() team.T                { return a.team }
 func (a *A) Radius() float64             { return a.radius }
 func (a *A) Mass() float64               { return a.mass }
 func (a *A) MaxVelocity() float64        { return a.maxVelocity }

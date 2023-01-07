@@ -18,9 +18,10 @@ func AgentOnDifferentLayers(a agent.RO, b agent.RO) bool {
 }
 
 // AgentIsSquishable checks if the agent a may be run over by b.
-//
-// TODO(minkezhang): Check if the agents are on the same team.
 func AgentIsSquishable(a agent.RO, b agent.RO) bool {
+	if a.Team() == b.Team() {
+		return false
+	}
 	if AgentOnDifferentLayers(a, b) {
 		return false
 	}

@@ -1,8 +1,6 @@
 package agent
 
 import (
-	"fmt"
-
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
 	"github.com/downflux/go-database/team"
@@ -57,8 +55,8 @@ type A struct {
 }
 
 func New(o O) *A {
-	if !Validate(o.Flags) {
-		panic(fmt.Sprintf("cannot create agent: invalid mask %v", o.Flags))
+	if !Validate(o) {
+		panic("cannot create agent")
 	}
 
 	a := &A{
@@ -148,14 +146,20 @@ func (a *A) AABB() hyperrectangle.R {
 	)
 }
 
-func Validate(f flags.F) bool {
-	if f&flags.FSizeProjectile != 0 {
+func Validate(o O) bool {
+	if o.Radius == 0 {
+		return false
+	}
+	if o.Mass == 0 {
+		return false
+	}
+	if o.Flags&flags.FSizeProjectile != 0 {
 		return false
 	}
 
-	if f&(flags.SizeCheck) == 0 {
+	if o.Flags&flags.SizeCheck == 0 {
 		return false
 	}
 
-	return flags.Validate(f)
+	return flags.Validate(o.Flags)
 }

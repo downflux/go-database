@@ -34,6 +34,12 @@ func New(x id.ID, o roagent.O) *A {
 	if o.Heading == nil {
 		(&o).Heading = polar.V{0, 0}
 	}
+	if o.Mass == 0 {
+		o.Mass = 1
+	}
+	if o.Radius == 0 {
+		o.Radius = 1
+	}
 
 	a := agent.New(agent.O(o))
 	a.SetID(x)

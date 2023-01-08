@@ -1,8 +1,6 @@
 package feature
 
 import (
-	"fmt"
-
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
 	"github.com/downflux/go-database/team"
@@ -27,8 +25,8 @@ type F struct {
 }
 
 func New(o O) *F {
-	if !Validate(o.Flags) {
-		panic(fmt.Sprintf("cannot create feature: invalid mask %v", o.Flags))
+	if !Validate(o) {
+		panic("cannot create feature")
 	}
 
 	f := &F{
@@ -56,9 +54,9 @@ func (f *F) AABB() hyperrectangle.R {
 func (f *F) SetID(x id.ID)      { f.id = x }
 func (f *F) SetFlags(g flags.F) { f.flags = g }
 
-func Validate(f flags.F) bool {
-	if f&flags.SizeCheck != 0 {
+func Validate(o O) bool {
+	if o.Flags&flags.SizeCheck != 0 {
 		return false
 	}
-	return flags.Validate(f)
+	return flags.Validate(o.Flags)
 }

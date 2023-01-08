@@ -1,8 +1,6 @@
 package projectile
 
 import (
-	"fmt"
-
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
 	"github.com/downflux/go-database/team"
@@ -37,8 +35,8 @@ type P struct {
 }
 
 func New(o O) *P {
-	if !Validate(o.Flags) {
-		panic(fmt.Sprintf("cannot create agent: invalid mask %v", o.Flags))
+	if !Validate(o) {
+		panic("cannot create agent")
 	}
 
 	p := &P{
@@ -121,9 +119,12 @@ func (p *P) AABB() hyperrectangle.R {
 
 }
 
-func Validate(f flags.F) bool {
-	if f&flags.FSizeProjectile == 0 {
+func Validate(o O) bool {
+	if o.Radius == 0 {
 		return false
 	}
-	return flags.Validate(f)
+	if o.Flags&flags.FSizeProjectile == 0 {
+		return false
+	}
+	return flags.Validate(o.Flags)
 }

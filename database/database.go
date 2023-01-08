@@ -28,6 +28,17 @@ var (
 	}
 )
 
+type RO interface {
+	GetAgentOrDie(x id.ID) roagent.RO
+	GetFeatureOrDie(x id.ID) rofeature.RO
+	GetProjectileOrDie(x id.ID) roprojectile.RO
+	ListAgents() <-chan roagent.RO
+	ListFeatures() <-chan rofeature.RO
+	ListProjectiles() <-chan roprojectile.RO
+	QueryAgents(q hyperrectangle.R, filter func(a roagent.RO) bool) []roagent.RO
+	QueryFeatures(q hyperrectangle.R, filter func(a rofeature.RO) bool) []rofeature.RO
+}
+
 type O struct {
 	LeafSize  int
 	Tolerance float64

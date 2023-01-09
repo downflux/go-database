@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/downflux/go-geometry/2d/vector"
+	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/epsilon"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
@@ -51,6 +52,19 @@ func TestNormal(t *testing.T) {
 			v:     vector.V{20, 20},
 			wantD: 10 * math.Sqrt(2),
 			wantN: vector.Unit(vector.V{1, 1}),
+		},
+
+		{
+			name:  "Corner/NE/Degenerate/NE",
+			v:     vector.Add(vector.V{10, 10}, vector.Scale(5, vector.V{1, math.Sqrt(3)})),
+			wantD: 2 * 5,
+			wantN: polar.Cartesian(polar.V{1, math.Pi / 3}),
+		},
+		{
+			name:  "Corner/NE/Degenerate",
+			v:     vector.V{20, 10},
+			wantD: 10,
+			wantN: vector.Unit(vector.V{1, 0}),
 		},
 
 		{

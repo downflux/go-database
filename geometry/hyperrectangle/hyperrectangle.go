@@ -2,6 +2,7 @@ package hyperrectangle
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/downflux/go-geometry/2d/hypersphere"
 	"github.com/downflux/go-geometry/2d/line"
@@ -27,41 +28,47 @@ const (
 )
 
 // Normal finds the appropriate normal vector of the hyperrectangle which is
-// closest to the input vector v.
-//
-// TODO(minkezhang): Return distance as well.
-func Normal(r hyperrectangle.R, v vector.V) vector.V {
+// closest to the input vector v. Also returns the distance to the corresponding
+// edge or corner.
+func Normal(r hyperrectangle.R, v vector.V) (float64, vector.V) {
 	vx, vy := v.X(), v.Y()
 
+	var d float64
 	xmin, xmax := r.Min().X(vnd.AXIS_X), r.Max().X(vnd.AXIS_X)
 	ymin, ymax := r.Min().X(vnd.AXIS_Y), r.Max().X(vnd.AXIS_Y)
 
 	var domain Side
 	if dnorth := vy - ymax; dnorth >= 0 {
+		d += dnorth * dnorth
 		domain |= SideN
 	}
 	if dsouth := ymin - vy; dsouth >= 0 {
+		d += dsouth * dsouth
 		domain |= SideS
 	}
 	if deast := vx - xmax; deast >= 0 {
+		d += deast * deast
 		domain |= SideE
 	}
 	if dwest := xmin - vx; dwest >= 0 {
+		d += dwest * dwest
 		domain |= SideW
 	}
+
+	d = math.Sqrt(d)
 
 	n := vector.M{0, 0}
 	n.Copy(v)
 
 	switch domain {
 	case SideN:
-		return vector.V{0, 1}
+		return d, vector.V{0, 1}
 	case SideE:
-		return vector.V{1, 0}
+		return d, vector.V{1, 0}
 	case SideS:
-		return vector.V{0, -1}
+		return d, vector.V{0, -1}
 	case SideW:
-		return vector.V{-1, 0}
+		return d, vector.V{-1, 0}
 	case CornerNE:
 		n.Sub(vector.V{xmax, ymax})
 		if epsilon.Within(vector.Magnitude(n.V()), 0) {
@@ -87,7 +94,7 @@ func Normal(r hyperrectangle.R, v vector.V) vector.V {
 	}
 
 	n.Unit()
-	return n.V()
+	return d, n.V()
 }
 
 // IntersectCircle checks if a circle overlaps an AABB. Note that this can be

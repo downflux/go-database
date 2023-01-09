@@ -1,9 +1,11 @@
 package hyperrectangle
 
 import (
+	"math"
 	"testing"
 
 	"github.com/downflux/go-geometry/2d/vector"
+	"github.com/downflux/go-geometry/epsilon"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
 	vnd "github.com/downflux/go-geometry/nd/vector"
@@ -12,59 +14,75 @@ import (
 func TestNormal(t *testing.T) {
 	r := *hyperrectangle.New(vnd.V{0, 0}, vnd.V{10, 10})
 	type config struct {
-		name string
-		v    vector.V
-		want vector.V
+		name  string
+		v     vector.V
+		wantD float64
+		wantN vector.V
 	}
 
 	configs := []config{
 		{
-			name: "North",
-			v:    vector.V{5, 20},
-			want: vector.V{0, 1},
+			name:  "North",
+			v:     vector.V{5, 20},
+			wantD: 10,
+			wantN: vector.V{0, 1},
 		},
 		{
-			name: "South",
-			v:    vector.V{5, -10},
-			want: vector.V{0, -1},
+			name:  "South",
+			v:     vector.V{5, -10},
+			wantD: 10,
+			wantN: vector.V{0, -1},
 		},
 		{
-			name: "East",
-			v:    vector.V{20, 5},
-			want: vector.V{1, 0},
+			name:  "East",
+			v:     vector.V{20, 5},
+			wantD: 10,
+			wantN: vector.V{1, 0},
 		},
 		{
-			name: "West",
-			v:    vector.V{-10, 5},
-			want: vector.V{-1, 0},
+			name:  "West",
+			v:     vector.V{-10, 5},
+			wantD: 10,
+			wantN: vector.V{-1, 0},
 		},
 
 		{
-			name: "Corner/NE",
-			v:    vector.V{10, 10},
-			want: vector.Unit(vector.V{1, 1}),
+			name:  "Corner/NE/Far",
+			v:     vector.V{20, 20},
+			wantD: 10 * math.Sqrt(2),
+			wantN: vector.Unit(vector.V{1, 1}),
+		},
+
+		{
+			name:  "Corner/NE",
+			v:     vector.V{10, 10},
+			wantD: 0,
+			wantN: vector.Unit(vector.V{1, 1}),
 		},
 		{
-			name: "Corner/SE",
-			v:    vector.V{10, 0},
-			want: vector.Unit(vector.V{1, -1}),
+			name:  "Corner/SE",
+			v:     vector.V{10, 0},
+			wantD: 0,
+			wantN: vector.Unit(vector.V{1, -1}),
 		},
 		{
-			name: "Corner/SW",
-			v:    vector.V{0, 0},
-			want: vector.Unit(vector.V{-1, -1}),
+			name:  "Corner/SW",
+			v:     vector.V{0, 0},
+			wantD: 0,
+			wantN: vector.Unit(vector.V{-1, -1}),
 		},
 		{
-			name: "Corner/NW",
-			v:    vector.V{0, 10},
-			want: vector.Unit(vector.V{-1, 1}),
+			name:  "Corner/NW",
+			v:     vector.V{0, 10},
+			wantD: 0,
+			wantN: vector.Unit(vector.V{-1, 1}),
 		},
 	}
 
 	for _, c := range configs {
 		t.Run(c.name, func(t *testing.T) {
-			if got := Normal(r, c.v); !vector.Within(got, c.want) {
-				t.Errorf("Normal() = %v, want = %v", got, c.want)
+			if gotD, gotN := Normal(r, c.v); !vector.Within(gotN, c.wantN) || !epsilon.Within(gotD, c.wantD) {
+				t.Errorf("Normal() = %v, %v, want = %v, %v", gotD, gotN, c.wantD, c.wantN)
 			}
 		})
 	}

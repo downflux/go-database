@@ -52,12 +52,19 @@ func AgentIsCollidingNotSquishable(a agent.RO, b agent.RO) bool {
 	return !AgentIsSquishable(a, b) && AgentIsColliding(a, b)
 }
 
-func AgentIsCollidingWithFeature(a agent.RO, f feature.RO) bool {
+func FeatureOnDifferentLayers(a agent.RO, f feature.RO) bool {
 	m, n := a.Flags(), f.Flags()
 
 	// Feature and agent are allowed to overlap if (only) one of them is in
 	// the air.
 	if (m^n)&flags.FTerrainAir == flags.FTerrainAir {
+		return true
+	}
+	return false
+}
+
+func AgentIsCollidingWithFeature(a agent.RO, f feature.RO) bool {
+	if FeatureOnDifferentLayers(a, f) {
 		return false
 	}
 

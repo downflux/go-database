@@ -3,8 +3,8 @@ package mock
 import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-database/internal/agent"
-	"github.com/downflux/go-database/team"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
@@ -58,5 +58,5 @@ func (a *A) MaxVelocity() float64        { return (*agent.A)(a).MaxVelocity() }
 func (a *A) MaxAngularVelocity() float64 { return (*agent.A)(a).MaxAngularVelocity() }
 func (a *A) MaxAcceleration() float64    { return (*agent.A)(a).MaxAcceleration() }
 func (a *A) Flags() flags.F              { return (*agent.A)(a).Flags() }
-func (a *A) Team() team.T                { return (*agent.A)(a).Team() }
+func (a *A) Team() team.F                { return (*agent.A)(a).Team() }
 func (a *A) AABB() hyperrectangle.R      { return (*agent.A)(a).AABB() }

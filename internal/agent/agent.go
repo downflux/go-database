@@ -3,6 +3,7 @@ package agent
 import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/flags/size"
 	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
@@ -23,6 +24,7 @@ type O struct {
 	MaxAngularVelocity float64
 	MaxAcceleration    float64
 	Flags              flags.F
+	Size               size.F
 	Team               team.F
 }
 
@@ -51,6 +53,7 @@ type A struct {
 	maxAcceleration    float64
 
 	flags flags.F
+	size  size.F
 	team  team.F
 }
 
@@ -71,6 +74,7 @@ func New(o O) *A {
 		maxAngularVelocity: o.MaxAngularVelocity,
 		maxAcceleration:    o.MaxAcceleration,
 		flags:              o.Flags,
+		size:               o.Size,
 		team:               o.Team,
 	}
 
@@ -91,6 +95,7 @@ func (a *A) Mass() float64               { return a.mass }
 func (a *A) MaxVelocity() float64        { return a.maxVelocity }
 func (a *A) MaxAngularVelocity() float64 { return a.maxAngularVelocity }
 func (a *A) MaxAcceleration() float64    { return a.maxAcceleration }
+func (a *A) Size() size.F                { return a.size }
 
 func (a *A) Position() vector.V {
 	buf := vector.M{0, 0}
@@ -153,11 +158,7 @@ func Validate(o O) bool {
 	if o.Mass == 0 {
 		return false
 	}
-	if o.Flags&flags.FSizeProjectile != 0 {
-		return false
-	}
-
-	if o.Flags&flags.SizeCheck == 0 {
+	if o.Size == size.FSmall {
 		return false
 	}
 

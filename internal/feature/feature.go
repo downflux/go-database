@@ -55,8 +55,5 @@ func (f *F) SetID(x id.ID)      { f.id = x }
 func (f *F) SetFlags(g flags.F) { f.flags = g }
 
 func Validate(o O) bool {
-	if o.Flags&flags.SizeCheck != 0 {
-		return false
-	}
 	return flags.Validate(o.Flags)
 }

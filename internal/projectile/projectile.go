@@ -123,8 +123,5 @@ func Validate(o O) bool {
 	if o.Radius == 0 {
 		return false
 	}
-	if o.Flags&flags.FSizeProjectile == 0 {
-		return false
-	}
 	return flags.Validate(o.Flags)
 }

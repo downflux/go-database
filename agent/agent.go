@@ -3,6 +3,7 @@ package agent
 import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/flags/size"
 	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-database/internal/agent"
 	"github.com/downflux/go-geometry/2d/vector"
@@ -29,6 +30,7 @@ type RO interface {
 	MaxAcceleration() float64
 
 	Flags() flags.F
+	Size() size.F
 	Team() team.F
 
 	AABB() hyperrectangle.R

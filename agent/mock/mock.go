@@ -3,6 +3,7 @@ package mock
 import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/flags/size"
 	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-database/internal/agent"
 	"github.com/downflux/go-geometry/2d/vector"
@@ -59,4 +60,5 @@ func (a *A) MaxAngularVelocity() float64 { return (*agent.A)(a).MaxAngularVeloci
 func (a *A) MaxAcceleration() float64    { return (*agent.A)(a).MaxAcceleration() }
 func (a *A) Flags() flags.F              { return (*agent.A)(a).Flags() }
 func (a *A) Team() team.F                { return (*agent.A)(a).Team() }
+func (a *A) Size() size.F                { return (*agent.A)(a).Size() }
 func (a *A) AABB() hyperrectangle.R      { return (*agent.A)(a).AABB() }

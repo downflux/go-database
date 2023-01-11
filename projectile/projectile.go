@@ -3,8 +3,8 @@ package projectile
 import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-database/internal/projectile"
-	"github.com/downflux/go-database/team"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
@@ -24,7 +24,7 @@ type RO interface {
 	Radius() float64
 
 	Flags() flags.F
-	Team() team.T
+	Team() team.F
 
 	AABB() hyperrectangle.R
 }

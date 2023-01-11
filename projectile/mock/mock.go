@@ -3,8 +3,8 @@ package mock
 import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-database/internal/projectile"
-	"github.com/downflux/go-database/team"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
@@ -20,19 +20,19 @@ type P projectile.P
 
 func New(x id.ID, o roprojectile.O) *P {
 	if o.Position == nil {
-		(&o).Position = vector.V{0, 0}
+		o.Position = vector.V{0, 0}
 	}
 	if o.TargetPosition == nil {
-		(&o).TargetPosition = vector.V{0, 0}
+		o.TargetPosition = vector.V{0, 0}
 	}
 	if o.Velocity == nil {
-		(&o).Velocity = vector.V{0, 0}
+		o.Velocity = vector.V{0, 0}
 	}
 	if o.TargetVelocity == nil {
-		(&o).TargetVelocity = vector.V{0, 0}
+		o.TargetVelocity = vector.V{0, 0}
 	}
 	if o.Heading == nil {
-		(&o).Heading = polar.V{0, 0}
+		o.Heading = polar.V{0, 0}
 	}
 
 	p := projectile.New(projectile.O(o))
@@ -48,5 +48,5 @@ func (p *P) TargetVelocity() vector.V { return (*projectile.P)(p).TargetVelocity
 func (p *P) Heading() polar.V         { return (*projectile.P)(p).Heading() }
 func (p *P) Radius() float64          { return (*projectile.P)(p).Radius() }
 func (p *P) Flags() flags.F           { return (*projectile.P)(p).Flags() }
-func (p *P) Team() team.T             { return (*projectile.P)(p).Team() }
+func (p *P) Team() team.F             { return (*projectile.P)(p).Team() }
 func (p *P) AABB() hyperrectangle.R   { return (*projectile.P)(p).AABB() }

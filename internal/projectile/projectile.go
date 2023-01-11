@@ -3,7 +3,7 @@ package projectile
 import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
-	"github.com/downflux/go-database/team"
+	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
@@ -19,7 +19,7 @@ type O struct {
 	Heading        polar.V
 	Radius         float64
 	Flags          flags.F
-	Team           team.T
+	Team           team.F
 }
 
 type P struct {
@@ -31,7 +31,7 @@ type P struct {
 	heading        polar.M
 	radius         float64
 	flags          flags.F
-	team           team.T
+	team           team.F
 }
 
 func New(o O) *P {
@@ -61,7 +61,7 @@ func New(o O) *P {
 
 func (p *P) ID() id.ID       { return p.id }
 func (p *P) Flags() flags.F  { return p.flags }
-func (p *P) Team() team.T    { return p.team }
+func (p *P) Team() team.F    { return p.team }
 func (p *P) Radius() float64 { return p.radius }
 
 func (p *P) Position() vector.V {
@@ -100,7 +100,6 @@ func (p *P) SetTargetPosition(v vector.V) { p.targetPosition.Copy(v) }
 func (p *P) SetVelocity(v vector.V)       { p.velocity.Copy(v) }
 func (p *P) SetTargetVelocity(v vector.V) { p.targetVelocity.Copy(v) }
 func (p *P) SetHeading(v polar.V)         { p.heading.Copy(v) }
-func (p *P) SetFlags(f flags.F)           { p.flags = f }
 
 func (p *P) AABB() hyperrectangle.R {
 	x, y := p.position.X(), p.position.Y()
@@ -121,9 +120,6 @@ func (p *P) AABB() hyperrectangle.R {
 
 func Validate(o O) bool {
 	if o.Radius == 0 {
-		return false
-	}
-	if o.Flags&flags.FSizeProjectile == 0 {
 		return false
 	}
 	return flags.Validate(o.Flags)

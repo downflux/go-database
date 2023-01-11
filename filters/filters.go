@@ -25,7 +25,7 @@ func AgentIsSquishable(a agent.RO, b agent.RO) bool {
 	if AgentOnDifferentLayers(a, b) {
 		return false
 	}
-	return a.Flags()&flags.SizeCheck > b.Flags()&flags.SizeCheck
+	return a.Size() < b.Size()
 }
 
 func AgentIsTeammate(a agent.RO, b agent.RO) bool { return a.Team() == b.Team() }

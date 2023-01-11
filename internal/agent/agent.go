@@ -1,9 +1,13 @@
 package agent
 
 import (
+	"fmt"
+
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
-	"github.com/downflux/go-database/team"
+	"github.com/downflux/go-database/flags/move"
+	"github.com/downflux/go-database/flags/size"
+	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/nd/hyperrectangle"
@@ -23,7 +27,9 @@ type O struct {
 	MaxAngularVelocity float64
 	MaxAcceleration    float64
 	Flags              flags.F
-	Team               team.T
+	Size               size.F
+	Team               team.F
+	Move               move.F
 }
 
 type A struct {
@@ -51,7 +57,9 @@ type A struct {
 	maxAcceleration    float64
 
 	flags flags.F
-	team  team.T
+	size  size.F
+	team  team.F
+	move  move.F
 }
 
 func New(o O) *A {
@@ -71,7 +79,9 @@ func New(o O) *A {
 		maxAngularVelocity: o.MaxAngularVelocity,
 		maxAcceleration:    o.MaxAcceleration,
 		flags:              o.Flags,
+		size:               o.Size,
 		team:               o.Team,
+		move:               o.Move,
 	}
 
 	a.position.Copy(o.Position)
@@ -85,12 +95,14 @@ func New(o O) *A {
 
 func (a *A) ID() id.ID                   { return a.id }
 func (a *A) Flags() flags.F              { return a.flags }
-func (a *A) Team() team.T                { return a.team }
+func (a *A) Team() team.F                { return a.team }
 func (a *A) Radius() float64             { return a.radius }
 func (a *A) Mass() float64               { return a.mass }
 func (a *A) MaxVelocity() float64        { return a.maxVelocity }
 func (a *A) MaxAngularVelocity() float64 { return a.maxAngularVelocity }
 func (a *A) MaxAcceleration() float64    { return a.maxAcceleration }
+func (a *A) Size() size.F                { return a.size }
+func (a *A) MoveMode() move.F            { return a.move }
 
 func (a *A) Position() vector.V {
 	buf := vector.M{0, 0}
@@ -128,7 +140,13 @@ func (a *A) SetTargetPosition(v vector.V) { a.targetPosition.Copy(v) }
 func (a *A) SetVelocity(v vector.V)       { a.velocity.Copy(v) }
 func (a *A) SetTargetVelocity(v vector.V) { a.targetVelocity.Copy(v) }
 func (a *A) SetHeading(v polar.V)         { a.heading.Copy(v) }
-func (a *A) SetFlags(f flags.F)           { a.flags = f }
+
+func (a *A) SetMoveMode(f move.F) {
+	if !move.Validate(f) {
+		panic(fmt.Sprintf("invalid move mode: %v", f))
+	}
+	a.move = f
+}
 
 func (a *A) AABB() hyperrectangle.R {
 	x, y := a.position.X(), a.position.Y()
@@ -153,11 +171,7 @@ func Validate(o O) bool {
 	if o.Mass == 0 {
 		return false
 	}
-	if o.Flags&flags.FSizeProjectile != 0 {
-		return false
-	}
-
-	if o.Flags&flags.SizeCheck == 0 {
+	if !size.Validate(o.Size) {
 		return false
 	}
 

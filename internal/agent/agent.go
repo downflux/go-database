@@ -158,7 +158,7 @@ func Validate(o O) bool {
 	if o.Mass == 0 {
 		return false
 	}
-	if o.Size == size.FSmall {
+	if !size.Validate(o.Size) {
 		return false
 	}
 

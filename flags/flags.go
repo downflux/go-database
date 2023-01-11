@@ -6,7 +6,7 @@ const (
 	FNone F = iota
 
 	// FTerrainAccessibleAir defines the agent can fly.
-	FTerrainAccessibleAir
+	FTerrainAccessibleAir = 1 << iota
 	FTerrainAccessibleLand
 	FTerrainAccessibleSea
 
@@ -28,14 +28,14 @@ const (
 
 // Validate ensures the input mask is valid. Additional checks may be added on
 // top of this for per-instance validation.
-func Validate(m F) bool {
-	if m&TerrainAirCheck == FTerrainAir {
+func Validate(f F) bool {
+	if f&TerrainAirCheck == FTerrainAir {
 		return false
 	}
-	if m&TerrainLandCheck == FTerrainLand {
+	if f&TerrainLandCheck == FTerrainLand {
 		return false
 	}
-	if m&TerrainSeaCheck == FTerrainSea {
+	if f&TerrainSeaCheck == FTerrainSea {
 		return false
 	}
 

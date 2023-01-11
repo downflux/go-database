@@ -3,6 +3,7 @@ package mock
 import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/flags/move"
 	"github.com/downflux/go-database/flags/size"
 	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-database/internal/agent"
@@ -21,25 +22,28 @@ type A agent.A
 
 func New(x id.ID, o roagent.O) *A {
 	if o.Position == nil {
-		(&o).Position = vector.V{0, 0}
+		o.Position = vector.V{0, 0}
 	}
 	if o.TargetPosition == nil {
-		(&o).TargetPosition = vector.V{0, 0}
+		o.TargetPosition = vector.V{0, 0}
 	}
 	if o.Velocity == nil {
-		(&o).Velocity = vector.V{0, 0}
+		o.Velocity = vector.V{0, 0}
 	}
 	if o.TargetVelocity == nil {
-		(&o).TargetVelocity = vector.V{0, 0}
+		o.TargetVelocity = vector.V{0, 0}
 	}
 	if o.Heading == nil {
-		(&o).Heading = polar.V{0, 0}
+		o.Heading = polar.V{0, 0}
 	}
 	if o.Mass == 0 {
 		o.Mass = 1
 	}
 	if o.Radius == 0 {
 		o.Radius = 1
+	}
+	if o.Size == size.FNone {
+		o.Size = size.FSmall
 	}
 
 	a := agent.New(agent.O(o))
@@ -61,4 +65,5 @@ func (a *A) MaxAcceleration() float64    { return (*agent.A)(a).MaxAcceleration(
 func (a *A) Flags() flags.F              { return (*agent.A)(a).Flags() }
 func (a *A) Team() team.F                { return (*agent.A)(a).Team() }
 func (a *A) Size() size.F                { return (*agent.A)(a).Size() }
+func (a *A) MoveMode() move.F            { return (*agent.A)(a).MoveMode() }
 func (a *A) AABB() hyperrectangle.R      { return (*agent.A)(a).AABB() }

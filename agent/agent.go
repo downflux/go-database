@@ -3,6 +3,7 @@ package agent
 import (
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/flags/move"
 	"github.com/downflux/go-database/flags/size"
 	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-database/internal/agent"
@@ -32,6 +33,7 @@ type RO interface {
 	Flags() flags.F
 	Size() size.F
 	Team() team.F
+	MoveMode() move.F
 
 	AABB() hyperrectangle.R
 }

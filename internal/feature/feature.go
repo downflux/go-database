@@ -51,8 +51,7 @@ func (f *F) AABB() hyperrectangle.R {
 	return buf.R()
 }
 
-func (f *F) SetID(x id.ID)      { f.id = x }
-func (f *F) SetFlags(g flags.F) { f.flags = g }
+func (f *F) SetID(x id.ID) { f.id = x }
 
 func Validate(o O) bool {
 	return flags.Validate(o.Flags)

@@ -19,10 +19,10 @@ type F feature.F
 
 func New(x id.ID, o rofeature.O) *F {
 	if o.Min == nil {
-		(&o).Min = vector.V{0, 0}
+		o.Min = vector.V{0, 0}
 	}
 	if o.Max == nil {
-		(&o).Max = vector.V{0, 0}
+		o.Max = vector.V{0, 0}
 	}
 
 	f := feature.New(feature.O(o))

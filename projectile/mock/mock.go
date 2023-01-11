@@ -20,19 +20,19 @@ type P projectile.P
 
 func New(x id.ID, o roprojectile.O) *P {
 	if o.Position == nil {
-		(&o).Position = vector.V{0, 0}
+		o.Position = vector.V{0, 0}
 	}
 	if o.TargetPosition == nil {
-		(&o).TargetPosition = vector.V{0, 0}
+		o.TargetPosition = vector.V{0, 0}
 	}
 	if o.Velocity == nil {
-		(&o).Velocity = vector.V{0, 0}
+		o.Velocity = vector.V{0, 0}
 	}
 	if o.TargetVelocity == nil {
-		(&o).TargetVelocity = vector.V{0, 0}
+		o.TargetVelocity = vector.V{0, 0}
 	}
 	if o.Heading == nil {
-		(&o).Heading = polar.V{0, 0}
+		o.Heading = polar.V{0, 0}
 	}
 
 	p := projectile.New(projectile.O(o))

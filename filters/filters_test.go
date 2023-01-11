@@ -24,7 +24,6 @@ func TestAgentIsColliding(t *testing.T) {
 				Heading:  polar.V{1, 0},
 				Velocity: vector.V{0, 0},
 				Position: vector.V{1, 1},
-				Flags:    flags.FSizeSmall,
 			})
 			return config{
 				name: "NoCollide/SelfID",
@@ -39,14 +38,14 @@ func TestAgentIsColliding(t *testing.T) {
 				Radius:   1,
 				Velocity: vector.V{0, 0},
 				Heading:  polar.V{1, 0},
-				Flags:    flags.FSizeSmall | flags.FTerrainAir | flags.FTerrainAccessibleAir,
+				Flags:    flags.FTerrainAir | flags.FTerrainAccessibleAir,
 			})
 			b := mock.New(2, agent.O{
 				Position: vector.V{1, 1},
 				Radius:   1,
 				Velocity: vector.V{0, 0},
 				Heading:  polar.V{1, 0},
-				Flags:    flags.FSizeSmall | flags.FTerrainLand | flags.FTerrainAccessibleLand,
+				Flags:    flags.FTerrainLand | flags.FTerrainAccessibleLand,
 			})
 			return config{
 				name: "NoCollide/ExclusiveAir",
@@ -61,14 +60,14 @@ func TestAgentIsColliding(t *testing.T) {
 				Radius:   1,
 				Velocity: vector.V{0, 0},
 				Heading:  polar.V{1, 0},
-				Flags:    flags.FSizeSmall | flags.FTerrainAir | flags.FTerrainAccessibleAir,
+				Flags:    flags.FTerrainAir | flags.FTerrainAccessibleAir,
 			})
 			b := mock.New(2, agent.O{
 				Position: vector.V{1, 1},
 				Radius:   1,
 				Velocity: vector.V{0, 0},
 				Heading:  polar.V{1, 0},
-				Flags:    flags.FSizeSmall | flags.FTerrainAir | flags.FTerrainAccessibleAir,
+				Flags:    flags.FTerrainAir | flags.FTerrainAccessibleAir,
 			})
 			return config{
 				name: "Collide/BothAir",

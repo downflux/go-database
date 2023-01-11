@@ -6,6 +6,7 @@ import (
 	"github.com/downflux/go-bvh/bvh"
 	"github.com/downflux/go-bvh/container"
 	"github.com/downflux/go-bvh/id"
+	"github.com/downflux/go-database/flags/move"
 	"github.com/downflux/go-database/internal/agent"
 	"github.com/downflux/go-database/internal/feature"
 	"github.com/downflux/go-database/internal/projectile"
@@ -289,6 +290,12 @@ func (db *DB) SetAgentTargetVelocity(x id.ID, v vector.V) {
 // calls on other agents.
 func (db *DB) SetAgentHeading(x id.ID, v polar.V) {
 	db.GetAgentOrDie(x).(*agent.A).SetHeading(v)
+}
+
+// SetAgentMoveMode does not mutate the BVH and may be called concurrently with
+// calls on other agents.
+func (db *DB) SetAgentMoveMode(x id.ID, f move.F) {
+	db.GetAgentOrDie(x).(*agent.A).SetMoveMode(f)
 }
 
 // SetProjectilePosition does not mutate the BVH and may be called concurrently

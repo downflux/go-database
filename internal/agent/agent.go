@@ -1,8 +1,11 @@
 package agent
 
 import (
+	"fmt"
+
 	"github.com/downflux/go-bvh/id"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-database/flags/move"
 	"github.com/downflux/go-database/flags/size"
 	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-geometry/2d/vector"
@@ -26,6 +29,7 @@ type O struct {
 	Flags              flags.F
 	Size               size.F
 	Team               team.F
+	Move               move.F
 }
 
 type A struct {
@@ -55,6 +59,7 @@ type A struct {
 	flags flags.F
 	size  size.F
 	team  team.F
+	move  move.F
 }
 
 func New(o O) *A {
@@ -76,6 +81,7 @@ func New(o O) *A {
 		flags:              o.Flags,
 		size:               o.Size,
 		team:               o.Team,
+		move:               o.Move,
 	}
 
 	a.position.Copy(o.Position)
@@ -96,6 +102,7 @@ func (a *A) MaxVelocity() float64        { return a.maxVelocity }
 func (a *A) MaxAngularVelocity() float64 { return a.maxAngularVelocity }
 func (a *A) MaxAcceleration() float64    { return a.maxAcceleration }
 func (a *A) Size() size.F                { return a.size }
+func (a *A) MoveMode() move.F            { return a.move }
 
 func (a *A) Position() vector.V {
 	buf := vector.M{0, 0}
@@ -133,7 +140,13 @@ func (a *A) SetTargetPosition(v vector.V) { a.targetPosition.Copy(v) }
 func (a *A) SetVelocity(v vector.V)       { a.velocity.Copy(v) }
 func (a *A) SetTargetVelocity(v vector.V) { a.targetVelocity.Copy(v) }
 func (a *A) SetHeading(v polar.V)         { a.heading.Copy(v) }
-func (a *A) SetFlags(f flags.F)           { a.flags = f }
+
+func (a *A) SetMoveMode(f move.F) {
+	if !move.Validate(f) {
+		panic(fmt.Sprintf("invalid move mode: %v", f))
+	}
+	a.move = f
+}
 
 func (a *A) AABB() hyperrectangle.R {
 	x, y := a.position.X(), a.position.Y()

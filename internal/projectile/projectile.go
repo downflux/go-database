@@ -100,7 +100,6 @@ func (p *P) SetTargetPosition(v vector.V) { p.targetPosition.Copy(v) }
 func (p *P) SetVelocity(v vector.V)       { p.velocity.Copy(v) }
 func (p *P) SetTargetVelocity(v vector.V) { p.targetVelocity.Copy(v) }
 func (p *P) SetHeading(v polar.V)         { p.heading.Copy(v) }
-func (p *P) SetFlags(f flags.F)           { p.flags = f }
 
 func (p *P) AABB() hyperrectangle.R {
 	x, y := p.position.X(), p.position.Y()

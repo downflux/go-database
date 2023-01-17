@@ -104,35 +104,15 @@ func (a *A) MaxAcceleration() float64    { return a.maxAcceleration }
 func (a *A) Size() size.F                { return a.size }
 func (a *A) MoveMode() move.F            { return a.move }
 
-func (a *A) Position() vector.V {
-	buf := vector.M{0, 0}
-	buf.Copy(a.position.V())
-	return buf.V()
-}
-
-func (a *A) TargetPosition() vector.V {
-	buf := vector.M{0, 0}
-	buf.Copy(a.targetPosition.V())
-	return buf.V()
-}
-
-func (a *A) Velocity() vector.V {
-	buf := vector.M{0, 0}
-	buf.Copy(a.velocity.V())
-	return buf.V()
-}
-
-func (a *A) TargetVelocity() vector.V {
-	buf := vector.M{0, 0}
-	buf.Copy(a.targetVelocity.V())
-	return buf.V()
-}
-
-func (a *A) Heading() polar.V {
-	buf := polar.M{0, 0}
-	buf.Copy(a.heading.V())
-	return buf.V()
-}
+// Position returns the current position of the agent.
+//
+// External callers must not set the position via the position reference object
+// returned here.
+func (a *A) Position() vector.V       { return a.position.V() }
+func (a *A) TargetPosition() vector.V { return a.targetPosition.V() }
+func (a *A) Velocity() vector.V       { return a.velocity.V() }
+func (a *A) TargetVelocity() vector.V { return a.targetVelocity.V() }
+func (a *A) Heading() polar.V         { return a.heading.V() }
 
 func (a *A) SetID(x id.ID)                { a.id = x }
 func (a *A) SetPosition(v vector.V)       { a.position.Copy(v) }

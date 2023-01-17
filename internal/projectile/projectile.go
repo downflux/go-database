@@ -59,40 +59,15 @@ func New(o O) *P {
 	return p
 }
 
-func (p *P) ID() id.ID       { return p.id }
-func (p *P) Flags() flags.F  { return p.flags }
-func (p *P) Team() team.F    { return p.team }
-func (p *P) Radius() float64 { return p.radius }
-
-func (p *P) Position() vector.V {
-	buf := vector.M{0, 0}
-	buf.Copy(p.position.V())
-	return buf.V()
-}
-
-func (p *P) TargetPosition() vector.V {
-	buf := vector.M{0, 0}
-	buf.Copy(p.targetPosition.V())
-	return buf.V()
-}
-
-func (p *P) Velocity() vector.V {
-	buf := vector.M{0, 0}
-	buf.Copy(p.velocity.V())
-	return buf.V()
-}
-
-func (p *P) TargetVelocity() vector.V {
-	buf := vector.M{0, 0}
-	buf.Copy(p.targetVelocity.V())
-	return buf.V()
-}
-
-func (p *P) Heading() polar.V {
-	buf := polar.M{0, 0}
-	buf.Copy(p.heading.V())
-	return buf.V()
-}
+func (p *P) ID() id.ID                { return p.id }
+func (p *P) Flags() flags.F           { return p.flags }
+func (p *P) Team() team.F             { return p.team }
+func (p *P) Radius() float64          { return p.radius }
+func (p *P) Position() vector.V       { return p.position.V() }
+func (p *P) TargetPosition() vector.V { return p.targetPosition.V() }
+func (p *P) Velocity() vector.V       { return p.velocity.V() }
+func (p *P) TargetVelocity() vector.V { return p.targetVelocity.V() }
+func (p *P) Heading() polar.V         { return p.heading.V() }
 
 func (p *P) SetID(x id.ID)                { p.id = x }
 func (p *P) SetPosition(v vector.V)       { p.position.Copy(v) }

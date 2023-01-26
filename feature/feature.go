@@ -5,7 +5,7 @@ import (
 	"github.com/downflux/go-database/flags"
 	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-database/internal/feature"
-	"github.com/downflux/go-geometry/nd/hyperrectangle"
+	"github.com/downflux/go-geometry/2d/hyperrectangle"
 )
 
 type O feature.O

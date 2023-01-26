@@ -4,16 +4,14 @@ import (
 	"math"
 	"testing"
 
+	"github.com/downflux/go-geometry/2d/hyperrectangle"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
 	"github.com/downflux/go-geometry/epsilon"
-	"github.com/downflux/go-geometry/nd/hyperrectangle"
-
-	vnd "github.com/downflux/go-geometry/nd/vector"
 )
 
 func TestNormal(t *testing.T) {
-	r := *hyperrectangle.New(vnd.V{0, 0}, vnd.V{10, 10})
+	r := *hyperrectangle.New(vector.V{0, 0}, vector.V{10, 10})
 	type config struct {
 		name  string
 		v     vector.V
@@ -114,28 +112,28 @@ func TestIntersectCircle(t *testing.T) {
 	configs := []config{
 		{
 			name:   "Center",
-			r:      *hyperrectangle.New(vnd.V{0, 0}, vnd.V{10, 10}),
+			r:      *hyperrectangle.New(vector.V{0, 0}, vector.V{10, 10}),
 			p:      vector.V{5, 5},
 			radius: 1,
 			want:   true,
 		},
 		{
 			name:   "Corner",
-			r:      *hyperrectangle.New(vnd.V{0, 0}, vnd.V{10, 10}),
+			r:      *hyperrectangle.New(vector.V{0, 0}, vector.V{10, 10}),
 			p:      vector.V{-1, -1},
 			radius: 2,
 			want:   true,
 		},
 		{
 			name:   "Edge",
-			r:      *hyperrectangle.New(vnd.V{0, 0}, vnd.V{10, 10}),
+			r:      *hyperrectangle.New(vector.V{0, 0}, vector.V{10, 10}),
 			p:      vector.V{-1, 5},
 			radius: 2,
 			want:   true,
 		},
 		{
 			name:   "Outside",
-			r:      *hyperrectangle.New(vnd.V{0, 0}, vnd.V{10, 10}),
+			r:      *hyperrectangle.New(vector.V{0, 0}, vector.V{10, 10}),
 			p:      vector.V{12, 12},
 			radius: 1,
 			want:   false,

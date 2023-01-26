@@ -9,11 +9,12 @@ import (
 	"github.com/downflux/go-database/agent"
 	"github.com/downflux/go-database/feature"
 	"github.com/downflux/go-database/projectile"
-	"github.com/downflux/go-geometry/nd/hyperrectangle"
+	"github.com/downflux/go-geometry/2d/hyperrectangle"
 
 	roagent "github.com/downflux/go-database/agent"
 	rofeature "github.com/downflux/go-database/feature"
 	roprojectile "github.com/downflux/go-database/projectile"
+	hnd "github.com/downflux/go-geometry/nd/hyperrectangle"
 )
 
 type O struct {
@@ -43,12 +44,12 @@ func New(o O) *DB {
 
 	for _, a := range o.Agents {
 		db.agents[a.ID()] = a
-		db.agentsBVH.Insert(a.ID(), a.AABB())
+		db.agentsBVH.Insert(a.ID(), hnd.R(a.AABB()))
 	}
 
 	for _, f := range o.Features {
 		db.features[f.ID()] = f
-		db.featuresBVH.Insert(f.ID(), f.AABB())
+		db.featuresBVH.Insert(f.ID(), hnd.R(f.AABB()))
 	}
 
 	for _, p := range o.Projectiles {
@@ -152,7 +153,7 @@ func (db *DB) DeleteAgent(x id.ID) {
 // QueryAgents is a read-only operation and may be called concurrently with
 // other read-only operations.
 func (db *DB) QueryAgents(q hyperrectangle.R, filter func(a roagent.RO) bool) []roagent.RO {
-	candidates := db.agentsBVH.BroadPhase(q)
+	candidates := db.agentsBVH.BroadPhase(hnd.R(q))
 
 	results := make([]roagent.RO, 0, len(candidates))
 	for _, x := range candidates {
@@ -167,7 +168,7 @@ func (db *DB) QueryAgents(q hyperrectangle.R, filter func(a roagent.RO) bool) []
 // QueryFeatures is a read-only operation and may be called concurrently with
 // other read-only operations.
 func (db *DB) QueryFeatures(q hyperrectangle.R, filter func(a rofeature.RO) bool) []rofeature.RO {
-	candidates := db.featuresBVH.BroadPhase(q)
+	candidates := db.featuresBVH.BroadPhase(hnd.R(q))
 
 	results := make([]rofeature.RO, 0, len(candidates))
 	for _, x := range candidates {

@@ -10,13 +10,14 @@ import (
 	"github.com/downflux/go-database/internal/agent"
 	"github.com/downflux/go-database/internal/feature"
 	"github.com/downflux/go-database/internal/projectile"
+	"github.com/downflux/go-geometry/2d/hyperrectangle"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
-	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
 	roagent "github.com/downflux/go-database/agent"
 	rofeature "github.com/downflux/go-database/feature"
 	roprojectile "github.com/downflux/go-database/projectile"
+	hnd "github.com/downflux/go-geometry/nd/hyperrectangle"
 )
 
 var (
@@ -113,7 +114,7 @@ func (db *DB) InsertAgent(o roagent.O) roagent.RO {
 	a.SetID(x)
 
 	db.agents[x] = a
-	if err := db.agentsBVH.Insert(x, a.AABB()); err != nil {
+	if err := db.agentsBVH.Insert(x, hnd.R(a.AABB())); err != nil {
 		panic(fmt.Sprintf("cannot insert agent: %v", err))
 	}
 
@@ -129,7 +130,7 @@ func (db *DB) InsertFeature(o rofeature.O) rofeature.RO {
 	a.SetID(x)
 
 	db.features[x] = a
-	if err := db.featuresBVH.Insert(x, a.AABB()); err != nil {
+	if err := db.featuresBVH.Insert(x, hnd.R(a.AABB())); err != nil {
 		panic(fmt.Sprintf("cannot insert feature: %v", err))
 	}
 
@@ -233,7 +234,7 @@ func (db *DB) DeleteProjectile(x id.ID) {
 // QueryAgents is a read-only operation and may be called concurrently with
 // other read-only operations.
 func (db *DB) QueryAgents(q hyperrectangle.R, filter func(a roagent.RO) bool) []roagent.RO {
-	candidates := db.agentsBVH.BroadPhase(q)
+	candidates := db.agentsBVH.BroadPhase(hnd.R(q))
 
 	results := make([]roagent.RO, 0, len(candidates))
 	for _, x := range candidates {
@@ -248,7 +249,7 @@ func (db *DB) QueryAgents(q hyperrectangle.R, filter func(a roagent.RO) bool) []
 // QueryFeatures is a read-only operation and may be called concurrently with
 // other read-only operations.
 func (db *DB) QueryFeatures(q hyperrectangle.R, filter func(a rofeature.RO) bool) []rofeature.RO {
-	candidates := db.featuresBVH.BroadPhase(q)
+	candidates := db.featuresBVH.BroadPhase(hnd.R(q))
 
 	results := make([]rofeature.RO, 0, len(candidates))
 	for _, x := range candidates {
@@ -265,7 +266,7 @@ func (db *DB) SetAgentPosition(x id.ID, v vector.V) {
 	a := db.GetAgentOrDie(x)
 
 	a.(*agent.A).SetPosition(v)
-	db.agentsBVH.Update(x, a.AABB())
+	db.agentsBVH.Update(x, hnd.R(a.AABB()))
 }
 
 // SetAgentTargetPosition does not mutate the BVH and may be called concurrently

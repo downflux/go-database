@@ -8,11 +8,9 @@ import (
 	"github.com/downflux/go-database/flags/move"
 	"github.com/downflux/go-database/flags/size"
 	"github.com/downflux/go-database/flags/team"
+	"github.com/downflux/go-geometry/2d/hyperrectangle"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
-	"github.com/downflux/go-geometry/nd/hyperrectangle"
-
-	vnd "github.com/downflux/go-geometry/nd/vector"
 )
 
 type O struct {
@@ -133,11 +131,11 @@ func (a *A) AABB() hyperrectangle.R {
 	r := a.radius
 
 	return *hyperrectangle.New(
-		vnd.V{
+		vector.V{
 			x - r,
 			y - r,
 		},
-		vnd.V{
+		vector.V{
 			x + r,
 			y + r,
 		},

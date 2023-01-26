@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/downflux/go-geometry/2d/hyperrectangle"
 	"github.com/downflux/go-geometry/2d/hypersphere"
 	"github.com/downflux/go-geometry/2d/line"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/epsilon"
-	"github.com/downflux/go-geometry/nd/hyperrectangle"
-
-	vnd "github.com/downflux/go-geometry/nd/vector"
 )
 
 type Side uint64
@@ -34,8 +32,8 @@ func Normal(r hyperrectangle.R, v vector.V) (float64, vector.V) {
 	vx, vy := v.X(), v.Y()
 
 	var d float64
-	xmin, xmax := r.Min().X(vnd.AXIS_X), r.Max().X(vnd.AXIS_X)
-	ymin, ymax := r.Min().X(vnd.AXIS_Y), r.Max().X(vnd.AXIS_Y)
+	xmin, xmax := r.Min().X(), r.Max().X()
+	ymin, ymax := r.Min().Y(), r.Max().Y()
 
 	var domain Side
 	if dnorth := vy - ymax; dnorth >= 0 {
@@ -107,14 +105,14 @@ func Normal(r hyperrectangle.R, v vector.V) (float64, vector.V) {
 //
 // See https://stackoverflow.com/a/402019/873865 for more information.
 func IntersectCircle(r hyperrectangle.R, p vector.V, radius float64) bool {
-	if r.In(vnd.V(p)) {
+	if r.In(vector.V(p)) {
 		return true
 	}
 
 	c := *hypersphere.New(p, radius)
 
-	xmin, ymin := r.Min().X(vnd.AXIS_X), r.Min().X(vnd.AXIS_Y)
-	xmax, ymax := r.Max().X(vnd.AXIS_X), r.Max().X(vnd.AXIS_Y)
+	xmin, ymin := r.Min().X(), r.Min().Y()
+	xmax, ymax := r.Max().X(), r.Max().Y()
 
 	// Check corners.
 	if c.In(vector.V{xmin, ymin}) {

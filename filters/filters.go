@@ -4,8 +4,8 @@ import (
 	"github.com/downflux/go-database/agent"
 	"github.com/downflux/go-database/feature"
 	"github.com/downflux/go-database/flags"
+	"github.com/downflux/go-geometry/2d/hyperrectangle"
 	"github.com/downflux/go-geometry/2d/vector"
-	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
 	dhr "github.com/downflux/go-database/geometry/hyperrectangle"
 )

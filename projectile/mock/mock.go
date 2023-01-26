@@ -5,9 +5,9 @@ import (
 	"github.com/downflux/go-database/flags"
 	"github.com/downflux/go-database/flags/team"
 	"github.com/downflux/go-database/internal/projectile"
+	"github.com/downflux/go-geometry/2d/hyperrectangle"
 	"github.com/downflux/go-geometry/2d/vector"
 	"github.com/downflux/go-geometry/2d/vector/polar"
-	"github.com/downflux/go-geometry/nd/hyperrectangle"
 
 	roprojectile "github.com/downflux/go-database/projectile"
 )
